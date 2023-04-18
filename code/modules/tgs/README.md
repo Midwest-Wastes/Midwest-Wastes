@@ -1,13 +1,9 @@
-# DMAPI Internals
+# Core DMAPI functions
 
-This folder should be placed on it's own inside a codebase that wishes to use the TGS DMAPI. Warranty void if modified.
+This folder contains all DMAPI code not directly involved in an API.
 
-- [includes.dm](./includes.dm) is the file that should be included by DM code, it handles including the rest.
-- The [core](./core) folder includes all code not directly part of any API version.
-- The other versioned folders contain code for the different DMAPI versions.
-    - [v3210](./v3210) contains the final TGS3 API.
-    - [v4](./v4) is the legacy DMAPI 4 (Used in TGS 4.0.X versions).
-    - [v5](./v5) is the current DMAPI version used by TGS >=4.1.
-- [LICENSE](./LICENSE) is the MIT license for the DMAPI.
-
-APIs communicate with TGS in two ways. All versions implement TGS -> DM communication using /world/Topic. DM -> TGS communication, called the bridge method, is different for each version.
+- [_definitions.dm](./definitions.dm) contains defines needed across DMAPI internals.
+- [core.dm](./core.dm) contains the implementations of the `/world/proc/TgsXXX()` procs. Many map directly to the `/datum/tgs_api` functions. It also contains the /datum selection and setup code.
+- [datum.dm](./datum.dm) contains the `/datum/tgs_api` declarations that all APIs must implement.
+- [tgs_version.dm](./tgs_version.dm) contains the `/datum/tgs_version` definition
+- 
