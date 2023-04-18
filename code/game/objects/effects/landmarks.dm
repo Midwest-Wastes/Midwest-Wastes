@@ -769,6 +769,10 @@ obj/effect/landmark/start/f13/ncrlogisticsofficer
 	name = "Citizen"
 	icon_state = "Settler"
 
+/obj/effect/landmark/start/f13/pilot
+	name = "Vertibird Pilot"
+	icon_state = "Scribe"
+
 /obj/effect/landmark/start/f13/dendoc
 	name = "Doctor"
 
@@ -919,26 +923,6 @@ obj/effect/landmark/start/f13/ncrlogisticsofficer
 /obj/effect/landmark/start/f13/followersscientist
 	name = "Town Scientist"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /obj/effect/landmark/start/f13/noyan
 	name = "Noyan"
 	icon_state = "Pusher"
@@ -962,3 +946,11 @@ obj/effect/landmark/start/f13/ncrlogisticsofficer
 /obj/effect/landmark/start/f13/mangudai
 	name = "Mangudai"
 	icon_state = "Pusher"
+
+/obj/effect/landmark/start/f13/biker
+	name = "Hells Nomad"
+	icon_state = "Assistant"
+
+/obj/effect/landmark/start/f13/biker_boss
+	name = "Hells Nomad Boss"
+	icon_state = "Captain"

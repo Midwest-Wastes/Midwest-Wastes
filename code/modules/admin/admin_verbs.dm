@@ -19,11 +19,15 @@ GLOBAL_LIST_INIT(admin_verbs_admin, world.AVerbsAdmin())
 GLOBAL_PROTECT(admin_verbs_admin)
 /world/proc/AVerbsAdmin()
 	return list(
+	/client/proc/toggle_experimental_clickdrag_thing,				/*toggles the harm intent no-clickdrag thing*/
+	/client/proc/toggle_radpuddle_disco_vomit_nightmare,				/*makes radpuddles flash and show numbers. please dont use this*/
+	/client/proc/show_radpuddle_scores,				/*makes radpuddles flash and show numbers. please dont use this*/
 	/client/proc/invisimin,				/*allows our mob to go invisible/visible*/
 //	/datum/admins/proc/show_traitor_panel,	/*interface which shows a mob's mind*/ -Removed due to rare practical use. Moved to debug verbs ~Errorage
 	/datum/admins/proc/show_player_panel,	/*shows an interface for individual players, with various links (links require additional flags*/
 	/datum/verbs/menu/Admin/verb/playerpanel,
 	/client/proc/game_panel,			/*game panel, allows to change game-mode etc*/
+	/client/proc/getvpt,                /*shows all users who connected from a shady place*/
 	/client/proc/check_ai_laws,			/*shows AI and borg laws*/
 	/datum/admins/proc/toggleooc,		/*toggles ooc on/off for everyone*/
 	/datum/admins/proc/toggleooclocal,	/*toggles looc on/off for everyone*/
@@ -405,6 +409,35 @@ GLOBAL_PROTECT(admin_verbs_hideable)
 			mob.invisibility = INVISIBILITY_OBSERVER
 			to_chat(mob, "<span class='adminnotice'><b>Invisimin on. You are now as invisible as a ghost.</b></span>")
 
+/client/proc/toggle_experimental_clickdrag_thing()
+	set name = "Toggle Clickdrag Changes"
+	set category = "Debug"
+	set desc = "Toggles harm-intent clickdrag disabling. Its experimental, click this if people complain clickdragging being broken, and tell Superlagg what broke."
+	GLOB.use_experimental_clickdrag_thing = !GLOB.use_experimental_clickdrag_thing
+	log_admin("[key_name(usr)] toggled the harm intent clickdrag disabling thing.")
+	message_admins("[key_name_admin(usr)] toggled the harm intent clickdrag disabling thing.")
+	SSblackbox.record_feedback("tally", "admin_verb", 1, "Toggled clickdrag thing")
+	if(alert("Tell everyone the experimental clickdrag thing was [GLOB.use_experimental_clickdrag_thing ? "enabled" : "disabled"]?",,"Yes","No") != "Yes")
+		return
+	to_chat(world, "<B>The experimental harm-intent clickdrag disable thing has been [GLOB.use_experimental_clickdrag_thing ? "enabled" : "disabled"].</B>")
+
+/// No longer does what it did, but fuck it im keeping the name
+/client/proc/toggle_radpuddle_disco_vomit_nightmare()
+	set name = "Toggle Radturf Screaming"
+	set category = "Debug"
+	set desc = "Toggles whether mobs will scream and shout a number when irradiated."
+	GLOB.rad_puddle_debug = !GLOB.rad_puddle_debug
+	log_admin("[key_name(usr)] toggled Radturf screaming.")
+	message_admins("[key_name_admin(usr)] toggled Radturf screaming.")
+	SSblackbox.record_feedback("tally", "admin_verb", 1, "Toggled Radturf screaming")
+
+/client/proc/show_radpuddle_scores()
+	set name = "Show Radpuddle Numbers"
+	set category = "Debug"
+	set desc = "Makes the redpuddle'd tiles show numbers."
+	SEND_GLOBAL_SIGNAL(COMSIG_GLOB_RADIATION_SHOW)
+	message_admins("[key_name_admin(usr)] <B>pinged radiation.</B>")
+
 /client/proc/check_antagonists()
 	set name = "Check Antagonists"
 	set category = "Admin.Game"
@@ -458,6 +491,17 @@ GLOBAL_PROTECT(admin_verbs_hideable)
 				num++
 				i = 0
 	GLOB.stealthminID["[ckey]"] = "@[num2text(num)]"
+
+/client/proc/getvpt()
+	set category = "Admin"
+	set name = "Check Clients"
+	if(holder)
+		if(!check_rights(R_ADMIN, 0))
+			return
+		for (var/ckey in GLOB.warning_ckeys)
+			to_chat(usr, "[ckey] connected from a known [GLOB.warning_ckeys[ckey]].")
+		if (GLOB.warning_ckeys.len == 0)
+			to_chat(usr, "No ckeys have been flagged.")
 
 /client/proc/stealth()
 	set category = "Admin"

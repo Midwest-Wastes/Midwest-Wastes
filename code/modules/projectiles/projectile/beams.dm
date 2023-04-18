@@ -114,7 +114,7 @@
 	icon_state = "xray"
 	damage = 15 //makes it more useful against mobs
 	flag = "energy"
-	armour_penetration = 1 //it only does 5 damage.
+	armour_penetration = 1 //it only does 15 damage.
 	damage_type = "burn"
 	irradiate = 100 //incase friendly fire
 	range = 15
@@ -140,6 +140,10 @@
 	tracer_type = /obj/effect/projectile/tracer/disabler
 	muzzle_type = /obj/effect/projectile/muzzle/disabler
 	impact_type = /obj/effect/projectile/impact/disabler
+
+/obj/item/projectile/beam/disabler/debug
+	name = "debug disablebeam"
+	stamina = 100
 
 /obj/item/projectile/beam/pulse
 	name = "pulse"
@@ -315,12 +319,12 @@
 	name = "plasma bolt"
 	icon_state = "plasma_clot"
 	damage_type = BURN
-	damage = 60
-	armour_penetration = 0.8
+	damage = 40
+	armour_penetration = 0.0
 	flag = "laser"
 	eyeblur = 0
 	is_reflectable = FALSE
-	pixels_per_second = TILES_TO_PIXELS(50)
+	pixels_per_second = TILES_TO_PIXELS(25)
 
 /obj/item/projectile/beam/laser/lasgun //AER9
 	name = "laser beam"
@@ -329,7 +333,6 @@
 /obj/item/projectile/beam/laser/lasgun/hitscan //hitscan aer9 test
 	name = "laser beam"
 	damage = 32
-	armour_penetration = 0.02 //mostly just to allow scratch damage, so you arent SOL just mostly fucced
 	hitscan = TRUE
 	tracer_type = /obj/effect/projectile/tracer/laser
 	muzzle_type = /obj/effect/projectile/muzzle/laser
@@ -337,8 +340,7 @@
 
 /obj/item/projectile/beam/laser/lasgun/hitscan/focused
 	name = "overcharged laser beam"
-	damage = 34
-	armour_penetration = 0.6
+	damage = 32
 
 /obj/item/projectile/beam/laser/gatling/hitscan //Gatling Laser
 	name = "laser beam"
@@ -412,6 +414,10 @@
 /obj/item/projectile/beam/laser/gatling //Gatling Laser Projectile
 	name = "rapid-fire laser beam"
 	damage = 12
+
+/obj/item/projectile/beam/laser/pistol/retro
+	name = "laser beam"
+	damage = 40 //hits the trashmob threshold, the only thing making this gun okay
 
 /obj/item/projectile/beam/laser/pistol/wattz //Wattz pistol
 	name = "laser beam"
@@ -664,7 +670,7 @@
 
 /obj/item/projectile/beam/laser/aer14 //AER14
 	name = "laser beam"
-	damage = 38
+	damage = 50 //unique and hefty
 	icon_state = "omnilaser"
 	impact_effect_type = /obj/effect/temp_visual/impact_effect/blue_laser
 	light_color = LIGHT_COLOR_BLUE

@@ -36,6 +36,11 @@ GLOBAL_LIST_INIT(tier_three_parts, list(
 	/datum/crafting_recipe/super_capacitor,
 	/datum/crafting_recipe/ultra_micro_laser))
 
+GLOBAL_LIST_INIT(energyweapon_cell_crafting, list(
+	/datum/crafting_recipe/enhancedenergycell,
+	/datum/crafting_recipe/enhancedmfcell,
+	/datum/crafting_recipe/enhancedecp))
+
 GLOBAL_LIST_INIT(weaponcrafting_gun_recipes, list(
 	/datum/crafting_recipe/ninemil,
 	/datum/crafting_recipe/huntingrifle,
@@ -43,6 +48,7 @@ GLOBAL_LIST_INIT(weaponcrafting_gun_recipes, list(
 	/datum/crafting_recipe/huntingshotgun,
 	/datum/crafting_recipe/m1911,
 	/datum/crafting_recipe/varmintrifle,
+	/datum/crafting_recipe/salvaged_eastern_rifle,
 	/datum/crafting_recipe/autoaxe,
 	/datum/crafting_recipe/steelsaw,
 	/datum/crafting_recipe/tools/forged/entrenching_tool,
@@ -57,19 +63,28 @@ GLOBAL_LIST_INIT(weaponcrafting_gun_recipes, list(
 	/datum/crafting_recipe/booster,
 	/datum/crafting_recipe/heatsink,
 	/datum/crafting_recipe/laserguide,
-	/datum/crafting_recipe/gigalens))
+	/datum/crafting_recipe/gigalens,
+	/datum/crafting_recipe/ecpbad,
+	/datum/crafting_recipe/mfcbad,
+	/datum/crafting_recipe/ecbad,
+	/datum/crafting_recipe/gun/flintlock,
+	/datum/crafting_recipe/gun/flintlock_laser))
 
 GLOBAL_LIST_INIT(former_tribal_recipes, list(
-	/datum/crafting_recipe/tribal/bonetalisman,
+	///datum/crafting_recipe/tribal/bonetalisman, //broken item, unneeded
 	/datum/crafting_recipe/spearfisher,
+	/datum/crafting_recipe/bitterdrink,
+	/datum/crafting_recipe/bitterdrink5,
 	/datum/crafting_recipe/healpoultice,
 	/datum/crafting_recipe/healpoultice5,
-	/datum/crafting_recipe/redpotion,
-	/datum/crafting_recipe/bluepotion,
-	/datum/crafting_recipe/greenpotion,
+	//datum/crafting_recipe/redpotion,
+	//datum/crafting_recipe/bluepotion,
+	//datum/crafting_recipe/greenpotion,
 	/datum/crafting_recipe/food/pemmican,
 	/datum/crafting_recipe/tribal/bonebag))
 
+GLOBAL_LIST_INIT(energyweapon_crafting, list(
+	/datum/crafting_recipe/aer9_hotwired))
 
 //predominantly positive traits
 //this file is named weirdly so that positive traits are listed above negative ones
@@ -85,12 +100,11 @@ GLOBAL_LIST_INIT(former_tribal_recipes, list(
 
 /datum/quirk/horrifying_tastes
 	name = "Cannibal"
-	desc = "You eat people. Consuming human flesh doesn't bother you, and dishes such as longpork stew will heal you. Probably don't tell your neighbor."
+	desc = "You eat people. Consuming human flesh doesn't bother you, and dishes such as longpork stew will heal you. Probably don't tell your neighbor. ((This is an OOC trait and should only be found out in character and not through technology.))"
 	mob_trait = TRAIT_LONGPORKLOVER
 	value = 1
 	gain_text = span_notice("You have an insatiable hunger for the flesh of your fellow man.")
 	lose_text = span_notice("The terrible hunger fades - you feel peace at last.")
-	medical_record_text = "Patient refuses to comment on their dietary preferences."
 
 /datum/quirk/horrifying_tastes/add()
 	var/mob/living/carbon/human/H = quirk_holder
@@ -166,10 +180,10 @@ GLOBAL_LIST_INIT(former_tribal_recipes, list(
 
 /datum/quirk/freerunning
 	name = "Freerunning"
-	desc = "You're great at quick moves! You climb tables more quickly and land gracefully when falling from one floor up."
-	value = 1
+	desc = "You're great at quick moves! You climb tables more quickly and land gracefully when falling from one floor up. You can also climb some walls!"
+	value = 2
 	mob_trait = TRAIT_FREERUNNING
-	gain_text = span_notice("You feel lithe on your feet!")
+	gain_text = span_notice("You feel lithe on your feet! (Alt click walls to climb them!)")
 	lose_text = span_danger("You feel clumsy again.")
 	medical_record_text = "Patient scored highly on cardio tests."
 
@@ -221,7 +235,7 @@ GLOBAL_LIST_INIT(former_tribal_recipes, list(
 /datum/quirk/quick_step
 	name = "Speed Walker"
 	desc = "You walk with determined strides, and out-pace most people, at least, if you're both walking."
-	value = 1
+	value = 3
 	mob_trait = TRAIT_SPEEDY_STEP
 	gain_text = span_notice("You feel determined. No time to lose.")
 	lose_text = span_danger("You feel less determined. What's the rush, man?")
@@ -245,22 +259,6 @@ GLOBAL_LIST_INIT(former_tribal_recipes, list(
 	var/obj/item/musicaltuner/musicaltuner = new(get_turf(H))
 	H.put_in_hands(musicaltuner)
 	H.equip_to_slot_if_possible(musicaltuner, SLOT_IN_BACKPACK)
-	H.regenerate_icons()
-
-/datum/quirk/photographer
-	name = "Photographer"
-	desc = "You know how to handle a camera, shortening the delay between each shot."
-	value = 0
-	mob_trait = TRAIT_PHOTOGRAPHER
-	gain_text = span_notice("You know everything about photography.")
-	lose_text = span_danger("You forget how photo cameras work.")
-	medical_record_text = "Patient mentions photography as a stress-relieving hobby."
-
-/datum/quirk/photographer/on_spawn()
-	var/mob/living/carbon/human/H = quirk_holder
-	var/obj/item/camera/camera = new(get_turf(H))
-	H.put_in_hands(camera)
-	H.equip_to_slot(camera, SLOT_NECK)
 	H.regenerate_icons()
 
 /datum/quirk/selfaware
@@ -317,11 +315,15 @@ GLOBAL_LIST_INIT(former_tribal_recipes, list(
 	if(!H.mind.learned_recipes)
 		H.mind.learned_recipes = list()
 	H.mind.learned_recipes |= GLOB.tier_three_parts
+	H.mind.learned_recipes |= GLOB.energyweapon_cell_crafting
+	H.mind.learned_recipes |= GLOB.energyweapon_crafting
 
 /datum/quirk/technophreak/remove()
 	var/mob/living/carbon/human/H = quirk_holder
 	if(H)
 		H.mind.learned_recipes -= GLOB.tier_three_parts
+		H.mind.learned_recipes -= GLOB.energyweapon_cell_crafting
+		H.mind.learned_recipes -= GLOB.energyweapon_crafting
 
 /datum/quirk/gunsmith
 	name = "Weaponsmith"
@@ -500,9 +502,9 @@ GLOBAL_LIST_INIT(former_tribal_recipes, list(
 	locked = FALSE
 
 /datum/quirk/lifegiver/on_spawn()
-	var/mob/living/carbon/human/mob_tar = quirk_holder
-	mob_tar.maxHealth += 10
-	mob_tar.health += 10
+	var/mob/living/carbon/human/H = quirk_holder
+	H.maxHealth += 10
+	H.health += 10
 
 /datum/quirk/lifegiverplus
 	name = "Health - Tougher"
@@ -514,10 +516,10 @@ GLOBAL_LIST_INIT(former_tribal_recipes, list(
 	medical_record_text = "Patient has much higher capacity for injury."
 	locked = FALSE
 
-/datum/quirk/lifegiver/on_spawn()
-	var/mob/living/carbon/human/mob_tar = quirk_holder
-	mob_tar.maxHealth += 20
-	mob_tar.health += 20
+/datum/quirk/lifegiverplus/on_spawn()
+	var/mob/living/carbon/human/H = quirk_holder
+	H.maxHealth += 20
+	H.health += 20
 
 /datum/quirk/iron_fist
 	name = "Fists of Iron"
@@ -529,9 +531,9 @@ GLOBAL_LIST_INIT(former_tribal_recipes, list(
 	locked = FALSE
 
 /datum/quirk/iron_fist/on_spawn()
-	var/mob/living/carbon/human/mob_tar = quirk_holder
-	mob_tar.dna.species.punchdamagelow = 6
-	mob_tar.dna.species.punchdamagehigh = 12
+	var/mob/living/carbon/human/H = quirk_holder
+	H.dna.species.punchdamagelow = IRON_FIST_PUNCH_DAMAGE_LOW
+	H.dna.species.punchdamagehigh = IRON_FIST_PUNCH_DAMAGE_MAX
 
 /datum/quirk/steel_fist
 	name = "Fists of Steel"
@@ -543,9 +545,9 @@ GLOBAL_LIST_INIT(former_tribal_recipes, list(
 	locked = FALSE
 
 /datum/quirk/steel_fist/on_spawn()
-	var/mob/living/carbon/human/mob_tar = quirk_holder
-	mob_tar.dna.species.punchdamagelow = 10
-	mob_tar.dna.species.punchdamagehigh = 16
+	var/mob/living/carbon/human/H = quirk_holder
+	H.dna.species.punchdamagelow = STEEL_FIST_PUNCH_DAMAGE_LOW
+	H.dna.species.punchdamagehigh = STEEL_FIST_PUNCH_DAMAGE_MAX
 
 /datum/quirk/light_step
 	name = "Glass Walker"
@@ -598,6 +600,8 @@ GLOBAL_LIST_INIT(former_tribal_recipes, list(
 
 /datum/quirk/lick_heal/on_spawn()
 	var/mob/living/carbon/human/human_holder = quirk_holder
+	if(!quirk_holder)
+		return //oh no
 	var/obj/item/organ/tongue/our_tongue = human_holder.getorganslot(ORGAN_SLOT_TONGUE)
 	if(!our_tongue)
 		return //welp
@@ -605,6 +609,8 @@ GLOBAL_LIST_INIT(former_tribal_recipes, list(
 
 /datum/quirk/lick_heal/remove()
 	var/mob/living/carbon/human/human_holder = quirk_holder
+	if(!quirk_holder)
+		return //oh no
 	var/obj/item/organ/tongue/our_tongue = human_holder.getorganslot(ORGAN_SLOT_TONGUE)
 	if(!our_tongue)
 		return //welp
@@ -860,7 +866,7 @@ GLOBAL_LIST_INIT(former_tribal_recipes, list(
 /datum/quirk/deadeye
 	name = "Dead Eye"
 	desc = "You hit the shots you aim. No ifs, ands, or buts."
-	value = 12 //WIP for sure, lmfao ~TK
+	value = 6
 	mob_trait = TRAIT_INSANE_AIM
 	gain_text = span_notice("Your aim is legendary, and you know it.")
 	lose_text = span_danger("Your aim could use some work...")
@@ -869,7 +875,7 @@ GLOBAL_LIST_INIT(former_tribal_recipes, list(
 /datum/quirk/straightshooter
 	name = "Straight Shooter"
 	desc = "You're a better than average shot."
-	value = 6
+	value = 4
 	mob_trait = TRAIT_NICE_SHOT
 	gain_text = span_notice("Your aim is amazing, and you know it.")
 	lose_text = span_danger("Your aim could use some work...")
@@ -891,6 +897,15 @@ GLOBAL_LIST_INIT(former_tribal_recipes, list(
 	mob_trait = TRAIT_FAST_PUMP
 	gain_text = span_notice("In a sudden haze you realize that the Mosin Nagant was Gods gift to mankind.")
 	lose_text = span_danger("After picking some 250 year old cosmoline out from under one of your nails you realize that... Uh, no, the Mosin Nagant is a piece of shit.")
+	locked =  FALSE
+
+/datum/quirk/playdead
+	name = "Class Act"
+	desc = "You're good at acting! *deathgasp will be extra convincing to rudimentary tests, such as healthhuds and examine."
+	value = 1
+	mob_trait = TRAIT_PLAY_DEAD
+	gain_text = span_notice("You feel confident at playing dead.")
+	lose_text = span_danger("You feel that laying down in a field of gunfire may not be such a good idea after all.")
 	locked =  FALSE
 
 /datum/quirk/ratfriend

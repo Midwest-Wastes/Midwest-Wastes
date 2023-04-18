@@ -192,7 +192,6 @@ GLOBAL_LIST_INIT(small_ammo_types, typecacheof(list(
 	/obj/item/ammo_box/magazine/m10mm/rifle,
 	/obj/item/ammo_box/magazine/autopipe,
 	/obj/item/ammo_box/magazine/m556/rifle/small,
-	/obj/item/ammo_box/c38,
 	/obj/item/ammo_box/l10mm,
 	/obj/item/ammo_box/a357,
 	/obj/item/ammo_box/m44,
@@ -200,7 +199,8 @@ GLOBAL_LIST_INIT(small_ammo_types, typecacheof(list(
 	/obj/item/ammo_box/a45lcrev,
 	/obj/item/ammo_box/rev308,
 	/obj/item/ammo_box/c4570,
-	/obj/item/ammo_box/a762,
+	/obj/item/ammo_box/a3006,
+	/obj/item/ammo_box/c22,
 	/obj/item/ammo_box/a308,
 	/obj/item/ammo_box/a556/stripper,
 	/obj/item/ammo_box/needle,
@@ -210,6 +210,14 @@ GLOBAL_LIST_INIT(small_ammo_types, typecacheof(list(
 /// Not so little bitty ammo thingies
 GLOBAL_LIST_INIT(holster_disallowed, typecacheof(list(
 	/obj/item/ammo_box/magazine/m22/extended
+	)))
+
+GLOBAL_LIST_INIT(typical_reagent_containers, typecacheof(list(
+	/obj/item/reagent_containers/glass,
+	/obj/item/reagent_containers/medspray,
+	/obj/item/reagent_containers/dropper,
+	/obj/item/reagent_containers/spray,
+	/obj/item/reagent_containers/syringe,
 	)))
 
 GLOBAL_LIST_INIT(advanced_hardsuit_allowed, typecacheof(list(
@@ -246,7 +254,8 @@ GLOBAL_LIST_INIT(f13_coat_allowed, typecacheof(list(
 	/obj/item/tank/internals,
 	/obj/item/storage/fancy/cigarettes,
 	/obj/item/throwing_star/spear,
-	/obj/item/restraints/legcuffs/bola
+	/obj/item/restraints/legcuffs/bola,
+	/obj/item/pitchfork,
 	)))
 
 GLOBAL_LIST_INIT(detective_vest_allowed, typecacheof(list(
@@ -536,7 +545,7 @@ GLOBAL_LIST_INIT(ammobelt_allowed, typecacheof(list(
 /// Things allowed in a scabbard
 GLOBAL_LIST_INIT(knifebelt_allowed, typecacheof(list(
 	/obj/item/storage/fancy/cigarettes,
-	/obj/item/melee,
+	/obj/item/melee/onehanded/knife,
 	/obj/item/reagent_containers/spray/pepper,
 	/obj/item/restraints/handcuffs,
 	/obj/item/tank/internals,
@@ -556,6 +565,14 @@ GLOBAL_LIST_INIT(storage_shoes_can_hold, typecacheof(list(
 	/obj/item/gun/ballistic/revolver/hobo/knifegun,
 	/obj/item/melee/onehanded/knife,
 	/obj/item/scalpel,
+	/obj/item/gun/energy/laser/retro,
+	/obj/item/gun/ballistic/revolver/police,
+	/obj/item/gun/ballistic/revolver/m29/snub,
+	/obj/item/gun/ballistic/automatic/pistol/ninemil/ruby,
+	)))
+
+GLOBAL_LIST_INIT(plushbelt_allowed, typecacheof(list(
+	/obj/item/toy/plush
 	)))
 
 GLOBAL_LIST_INIT(storage_hat_can_hold, typecacheof(list(
@@ -574,7 +591,7 @@ GLOBAL_LIST_INIT(storage_treasurer_can_hold, typecacheof(list(
 	/obj/item/melee/onehanded/knife,
 	/obj/item/paper,
 	/obj/item/folder,
-	/obj/item/storage/bag/money/small,
+	/obj/item/storage/wallet,
 	/obj/item/binoculars,
 	/obj/item/lipstick,
 	/obj/item/pen,
@@ -750,11 +767,11 @@ GLOBAL_LIST_INIT(storage_tray_can_hold, typecacheof(list(
 #define STORAGE_NECKPRON_GENERIC_MAX_TOTAL_SPACE STORAGE_NECKPRON_GENERIC_MAX_SIZE * STORAGE_NECKPRON_GENERIC_MAX_ITEMS
 
 /// How many items total fit in a holster neckpron
-#define STORAGE_NECKPRON_HOLSTER_MAX_ITEMS 7
+#define STORAGE_NECKPRON_HOLSTER_MAX_ITEMS 6
 /// How big a thing can fit in a holster neckpron
 #define STORAGE_NECKPRON_HOLSTER_MAX_SIZE WEIGHT_CLASS_NORMAL
 /// How much volume fits in a holster neckpron
-#define STORAGE_NECKPRON_HOLSTER_MAX_TOTAL_SPACE STORAGE_NECKPRON_HOLSTER_MAX_ITEMS * STORAGE_NECKPRON_HOLSTER_MAX_SIZE
+#define STORAGE_NECKPRON_HOLSTER_MAX_TOTAL_SPACE WEIGHT_CLASS_NORMAL * 2
 
 /* * * * * * * * * * * * * * *
  * Suit slot inventory things
@@ -835,11 +852,25 @@ GLOBAL_LIST_INIT(storage_tray_can_hold, typecacheof(list(
 #define STORAGE_CASING_BAG_MAX_TOTAL_SPACE STORAGE_CASING_BAG_MAX_ITEMS * STORAGE_CASING_BAG_MAX_SIZE
 
 /// How many items total fit in a casing quiver
-#define STORAGE_CASING_QUIVER_MAX_ITEMS 30
+#define STORAGE_QUIVER_MAX_ITEMS 24
 /// How big a thing can fit in a casing quiver
-#define STORAGE_CASING_QUIVER_MAX_SIZE WEIGHT_CLASS_NORMAL
+#define STORAGE_QUIVER_MAX_SIZE WEIGHT_CLASS_NORMAL
 /// How much volume fits in a casing quiver
-#define STORAGE_CASING_QUIVER_MAX_TOTAL_SPACE STORAGE_CASING_QUIVER_MAX_ITEMS * STORAGE_CASING_QUIVER_MAX_SIZE
+#define STORAGE_QUIVER_TOTAL_SPACE STORAGE_QUIVER_MAX_ITEMS * WEIGHT_CLASS_TINY
+
+/// How many items total fit in a casing quiver
+#define STORAGE_QUIVER_LIGHT_MAX_ITEMS 12
+/// How big a thing can fit in a casing quiver
+#define STORAGE_QUIVER_LIGHT_MAX_SIZE WEIGHT_CLASS_NORMAL
+/// How much volume fits in a casing quiver
+#define STORAGE_QUIVER_LIGHT_TOTAL_SPACE STORAGE_QUIVER_LIGHT_MAX_ITEMS * WEIGHT_CLASS_TINY
+
+/// How many items total fit in a casing quiver
+#define STORAGE_QUIVER_HEAVY_MAX_ITEMS 48
+/// How big a thing can fit in a casing quiver
+#define STORAGE_QUIVER_HEAVY_MAX_SIZE WEIGHT_CLASS_NORMAL
+/// How much volume fits in a casing quiver
+#define STORAGE_QUIVER_HEAVY_TOTAL_SPACE STORAGE_QUIVER_HEAVY_MAX_ITEMS * WEIGHT_CLASS_TINY
 
 /* * * *
  * Boxes

@@ -31,6 +31,8 @@
 	var/is_pickable = TRUE
 	/// The power of the casing on the gun itself, mostly for hobo guns checking whats loaded for misfires
 	var/fire_power = CASING_POWER_NONE * CASING_POWER_MOD_SURPLUS
+	/// A string pointing to a list pointing to a datum pointing to a bunch of sound shit
+	var/sound_properties = CSP_PISTOL_LIGHT
 
 /obj/item/ammo_casing/spent
 	name = "spent bullet casing"
@@ -41,6 +43,7 @@
 	deduct_powder_and_bullet_mats()
 
 /obj/item/ammo_casing/Initialize()
+	setup_sound_datums()
 	. = ..()
 	if(projectile_type)
 		BB = new projectile_type(src)
@@ -105,9 +108,9 @@
 	var/matz_iron = custom_materials[SSmaterials.GetMaterialRef(/datum/material/iron)]
 	var/matz_bp = custom_materials[SSmaterials.GetMaterialRef(/datum/material/blackpowder)]
 	if(iron_to_deduct && matz_iron)
-		newmats[/datum/material/iron] = (matz_iron - iron_to_deduct)
+		newmats[/datum/material/iron] = max(matz_iron - iron_to_deduct, 10)
 	if(powder_to_deduct && matz_bp)
-		newmats[/datum/material/blackpowder] = (matz_bp - (powder_to_deduct * MATS_AMMO_POWDER_BURN_MULT))
+		newmats[/datum/material/blackpowder] = max(matz_bp - (powder_to_deduct * MATS_AMMO_POWDER_BURN_MULT), 10) // idk why it kept going necative
 	if(LAZYLEN(newmats))
 		set_custom_materials(newmats)
 
@@ -115,6 +118,18 @@
 /obj/item/ammo_casing/proc/newshot() //For energy weapons, syringe gun, shotgun shells and wands (!).
 	if(!BB)
 		BB = new projectile_type(src, src)
+
+/// Returns our sound data lookup table~
+/obj/item/ammo_casing/proc/get_sound_datum()
+	if(!LAZYLEN(GLOB.casing_sound_properties))
+		setup_sound_datums()
+	return GLOB.casing_sound_properties[sound_properties]
+
+/// Sets up our precious sound datums
+/obj/item/ammo_casing/proc/setup_sound_datums()
+	if(LAZYLEN(GLOB.casing_sound_properties))
+		return
+	new /datum/ammo_sound_properties/light_pistol(TRUE) // it'll set it all up
 
 /obj/item/ammo_casing/attackby(obj/item/I, mob/user, params)
 	if(istype(I, /obj/item/ammo_box))

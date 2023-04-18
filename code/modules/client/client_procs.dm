@@ -7,8 +7,9 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 	"1407" = "bug preventing client display overrides from working leads to clients being able to see things/mobs they shouldn't be able to see",
 	"1408" = "bug preventing client display overrides from working leads to clients being able to see things/mobs they shouldn't be able to see",
 	"1428" = "bug causing right-click menus to show too many verbs that's been fixed in version 1429",
-
 	))
+GLOBAL_LIST_INIT(checked_ckeys, list())
+GLOBAL_LIST_INIT(warning_ckeys, list())
 
 #define LIMITER_SIZE	5
 #define CURRENT_SECOND	1
@@ -200,8 +201,12 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 
 //This stops files larger than UPLOAD_LIMIT being sent from client to server via input(), client.Import() etc.
 /client/AllowUpload(filename, filelength)
-	if(filelength > UPLOAD_LIMIT)
-		to_chat(src, "<font color='red'>Error: AllowUpload(): File Upload too large. Upload Limit: [UPLOAD_LIMIT/1024]KiB.</font>")
+	var/upLimit = UPLOAD_LIMIT
+	if(check_rights(R_ADMIN))
+		upLimit *= 5
+	
+	if(filelength > upLimit)
+		to_chat(src, "<font color='red'>Error: AllowUpload(): File Upload too large. Upload Limit: [upLimit/1024]KiB.</font>")
 		return 0
 	return 1
 
@@ -430,6 +435,15 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 				send2irc_adminless_only("New-user", "[key_name(src)] is connecting for the first time!")
 	else if (isnum(cached_player_age) && cached_player_age < nnpa)
 		message_admins("New user: [key_name_admin(src)] just connected with an age of [cached_player_age] day[(player_age==1?"":"s")]")
+	
+	//Check if the player is connecting from an IP hosting a VPN, Proxy, TOR exit node, or other relay
+	var/the_ckey = ckey(ckey)
+	if (!(the_ckey in GLOB.checked_ckeys))
+		GLOB.checked_ckeys.Add(the_ckey)
+		var/response = check_vpt(the_ckey, address)
+		if (response != null)
+			GLOB.warning_ckeys[the_ckey] = response
+	
 	if(CONFIG_GET(flag/use_account_age_for_jobs) && account_age >= 0)
 		player_age = account_age
 	if(account_age >= 0 && account_age < nnpa)
@@ -477,7 +491,6 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 	view_size.setZoomMode()
 	fit_viewport()
 	Master.UpdateTickRate()
-
 
 /proc/alert_async(mob/target, message)
 	set waitfor = FALSE
@@ -1091,3 +1104,91 @@ GLOBAL_LIST_INIT(blacklisted_builds, list(
 		var/datum/verbs/menu/menuitem = GLOB.menulist[thing]
 		if (menuitem)
 			menuitem.Load_checked(src)
+
+/client/proc/checkGonadDistaste(flag)
+	if(!flag || !prefs)
+		return
+	return CHECK_BITFIELD(prefs.features["genital_hide"], flag)
+
+/client/proc/toggleGenitalException(mob/moob)
+	if(!ismob(moob))
+		return
+	if(genital_exceptions[moob.real_name])
+		genital_exceptions -= moob.real_name
+		saveCockWhitelist()
+		return
+	addGenitalException(moob)
+
+/client/proc/addGenitalException(mob/moob)
+	if(!moob)
+		return
+	genital_exceptions[moob.real_name] = WEAKREF(moob)
+	saveCockWhitelist()
+	
+/client/proc/isGenitalWhitelisted(mob/moob)
+	if(!ismob(moob))
+		return FALSE
+	. = FALSE
+	for(var/ck in genital_exceptions)
+		if(findtext(ckey(moob.real_name), ckey(ck)))
+			. = TRUE
+			break
+		var/datum/weakref/wingus = genital_exceptions[ck]
+		if(isweakref(wingus))
+			var/mob/living/carbon/human/dingus = wingus.resolve()
+			if(dingus == moob)
+				. = TRUE
+				break
+	if(.)
+		genital_exceptions[moob.real_name] = WEAKREF(moob) // just refresh it or something
+		saveCockWhitelist()
+
+/// So turns out letting players see the ckeys of everyone they want to see the genitals of might be a bad idea
+/// So, lets store a list of mob names and dig up the ckey from that! Not a bad idea!
+/client/proc/inspectCockWhitelist(list/cockalist)
+	if(!LAZYLEN(cockalist))
+		return list()
+	var/list/cockout = list()
+	for(var/cock in cockalist) // list of mobs' stored names
+		cockout[cock] = null
+		for(var/mob/living/carbon/human/dick in GLOB.human_list)
+			if(!dick.ckey)
+				continue
+			if(!findtext(ckey(dick.real_name), ckey(cock))) // only ckey the names when checking, dont store them as ckeys lol
+				continue
+			cockout[cock] = WEAKREF(dick)
+	return cockout
+
+/client/proc/loadCockWhitelist()
+	if(!prefs)
+		return FALSE
+	genital_exceptions = inspectCockWhitelist(prefs.decode_cockwhitelist()) // get ready for penis inspection day
+
+/client/proc/saveCockWhitelist()
+	if(!prefs)
+		return FALSE
+	var/list/playerthing = list()
+	for(var/ck in genital_exceptions)
+		var/cock = ck
+		var/datum/weakref/wingus = genital_exceptions[ck]
+		if(isweakref(wingus))
+			var/mob/living/carbon/human/dingus = wingus.resolve()
+			if(dingus)
+				cock = dingus.real_name
+		playerthing |= cock
+	prefs.encode_cockwhitelist(playerthing)
+
+/mob/verb/genital_exception(mob/living/carbon/human/nicebutt as mob in view())
+	set name = "Genital Whitelist"
+	set desc = "Toggle whether or now you can see a specific person's genitals, when exposed."
+	set category = "IC"
+
+	if(!client) // not sure how you did this
+		return FALSE
+	if(!ishuman(nicebutt))
+		to_chat(src, span_alert("[nicebutt] doesn't have anything to hide!"))
+		return FALSE
+	client.toggleGenitalException(nicebutt)
+	to_chat(src, span_notice("Toggled seeing genitals on [nicebutt]."))
+	nicebutt.update_genitals(TRUE)
+	return TRUE

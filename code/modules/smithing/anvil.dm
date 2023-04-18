@@ -3,40 +3,45 @@
 #define WORKPIECE_FINISHED 3
 #define WORKPIECE_SLAG 5
 
+//bend start\tools, maybe add more tools?
 #define RECIPE_PICKAXE "bff" //bend fold fold
 #define RECIPE_SHOVEL "buu" //bend upset upset
 #define RECIPE_HAMMER "bpp" //bend punch punch
 #define RECIPE_PROSPECTPICK "bfs" //bend fold shrink
 #define RECIPE_KITCHENKNIFE "bsd" //bend shrink draw
 #define RECIPE_CROWBAR "bbb" //bend bend bend
+#define RECIPE_UNITOOL "bbu"  //bend bend upset
 
+//shrink start \maybe add armor here?
 #define RECIPE_RING "sss" //shrink shrink shrink
+
+//punch start \maybe add armor here?
 #define RECIPE_BALLANDCHAIN "pbu" //punch bend upset
 
+//fold start \Swords need a buff or need their math exposed to players \ Will also add more comments later
 #define RECIPE_MACHETE "fdf" //fold draw fold
 #define RECIPE_SABRE "ffdd" //fold fold draw draw
 #define RECIPE_SWORD "ffdf" // fold fold draw fold
 #define RECIPE_WAKI "fffd" //fold fold fold draw
 #define RECIPE_KATANA "fffff" //fold fold fold fold fold
+#define RECIPE_MACHREFORG "fddf" //fold punch punch
 
+//upset start \Mostly 2h weapons, save for the mace
 #define RECIPE_MACE "upu"  //upset punch upset
 #define RECIPE_AXE "udsp" //upset draw shrink punch
+#define RECIPE_SCRAP "udpp" //upset draw shrink punch \2h sword
 
+//draw start \Maybe add a shield here?
 #define RECIPE_DAGGER "dfs" //draw fold shrink
 #define RECIPE_SPEAR "ddbf" //draw draw bend fold
 #define RECIPE_JAVELIN "dbf" //draw bend fold
 #define RECIPE_THROWING "dbd" //draw bend draw
 
-//Tablevil specific
-#define RECIPE_MACHREFORG "fddf" //fold punch punch
-#define RECIPE_SCRAP "udpp" //upset draw shrink punch
-#define RECIPE_UNITOOL "bbu"  //bend bend upset
-
-//Legion specific
-#define RECIPE_LANCE "ddfp" //draw draw fold punch
-#define RECIPE_GLADIUS "fbf" //fold bend fold
-#define RECIPE_SPATHA "ffbf" // fold fold bend fold
-#define RECIPE_WARHONED "udup" //upset draw upset punch
+//Legion themed\ not exclusive to any anvil
+#define RECIPE_LANCE "ddfp" //draw draw fold punch \spear reskin
+#define RECIPE_GLADIUS "fbf" //fold bend fold \Machete reskin
+#define RECIPE_SPATHA "ffbf" // fold fold bend fold \Sword Reskin
+#define RECIPE_WARHONED "udup" //upset draw upset punch\ 2H axe reskin
 
 GLOBAL_LIST_INIT(anvil_recipes, list(
 	RECIPE_HAMMER = /obj/item/smithing/hammerhead,
@@ -189,12 +194,55 @@ GLOBAL_LIST_INIT(anvil_recipes, list(
 
 	// Time it takes for us to uh...forge..?
 	var/steptime = 50
+	switch(stepdone)
+		if("weak hit")
+			playsound(src, 'code/modules/smithing/sound/anvil_weak.ogg',45)
+			user.visible_message("<span class='notice'>[user] carefully hammers out imperfections in the metal.</span>", \
+						"<span class='notice'>You carefully hammer out imperfections in the metal.</span>")
+		if("strong hit")
+			playsound(src, 'code/modules/smithing/sound/anvil_strong.ogg',45)
+			do_smithing_sparks(1, TRUE, src) 
+			user.visible_message("<span class='notice'>[user] hammers out imperfections in the metal.</span>", \
+						"<span class='notice'>You hammer out imperfections in the metal.</span>")
+		if("heavy hit")
+			playsound(src, 'code/modules/smithing/sound/anvil_heavy.ogg',45)
+			do_smithing_sparks(2, TRUE, src) 
+			user.visible_message("<span class='notice'>[user] forcefully hammers out imperfections in the metal.</span>", \
+						"<span class='notice'>You forcefuly hammer out imperfections in the metal.</span>")
+		if("fold")
+			playsound(src, 'code/modules/smithing/sound/anvil_double1.ogg',45)
+			do_smithing_sparks(1, TRUE, src) 
+			user.visible_message("<span class='notice'>[user] folds the metal.</span>", \
+						"<span class='notice'>You fold the metal.</span>")
+		if("draw")
+			playsound(src, 'code/modules/smithing/sound/anvil_double2.ogg',45)
+			do_smithing_sparks(1, TRUE, src) 
+			user.visible_message("<span class='notice'>[user] hammers both sides of the metal, drawing it out.</span>", \
+						"<span class='notice'>You hammer both sides of the metal, drawing it out.</span>")
+		if("shrink")
+			playsound(src, 'code/modules/smithing/sound/anvil_rapid.ogg',45)
+			do_smithing_sparks(1, TRUE, src)
+			user.visible_message("<span class='notice'>[user] flattens the metal, shrinking it.</span>", \
+						"<span class='notice'>You flatten the metal, shrinking it.</span>")
+		if("bend")
+			playsound(src, 'code/modules/smithing/sound/anvil_single1.ogg',45)
+			do_smithing_sparks(1, TRUE, src) 
+			user.visible_message("<span class='notice'>[user] bends the metal, using the rounded end of the anvil.</span>", \
+						"<span class='notice'>You bend the metal, using the rounded end of the anvil.</span>")
+		if("punch")
+			playsound(src, 'code/modules/smithing/sound/anvil_single2.ogg',45)
+			do_smithing_sparks(1, TRUE, src) 
+			user.visible_message("<span class='notice'>[user] uses the puncher to make holes in the metal.</span>", \
+						"<span class='notice'>You use the puncher to make holes in the metal.</span>")
+		if("upset")
+			playsound(src, 'code/modules/smithing/sound/anvil_double3.ogg',45)
+			do_smithing_sparks(1, TRUE, src) 
+			user.visible_message("<span class='notice'>[user] upsets the metal by hammering the thick end.</span>", \
+						"<span class='notice'>You upset the metal by hammering the thick end.</span>")
 
 	if(user.mind.skill_holder) // Skill modifier to make it faster at blacksmithing.
 		var/skillmod = user.mind.get_skill_level(/datum/skill/level/dwarfy/blacksmithing)/8 + 1 //Makes this faster as EXP gain was lowered
 		steptime = 50 / skillmod
-
-	playsound(src, 'sound/effects/clang2.ogg',40, 2) // sounds. gotta have them..!
 
 	if(!do_after(user, steptime, target = src))
 		return SetBusy(FALSE, user)
@@ -238,19 +286,15 @@ GLOBAL_LIST_INIT(anvil_recipes, list(
 			stepsdone += "u"
 			currentsteps += 1
 			currentquality -= 1
-
+	
 	// Display message
-	user.visible_message(span_notice("[user] works the metal on the anvil with their hammer with a loud clang!"), \
-						span_notice("You [stepdone] the metal with a loud clang!"))
+	user.show_message(span_notice("You [stepdone] the metal."))
 	
 	// more sounds... uhhh...
-	playsound(src, 'sound/effects/clang2.ogg',40, 2)
+	//playsound(src, 'sound/effects/clang2.ogg',40, 2) - Keeping it commented for now.
 
 	// sparkles~
 	do_smithing_sparks(1, TRUE, src) 
-
-	// more fucking sounds after a timer..????????????????????????????????
-	addtimer(CALLBACK(GLOBAL_PROC, .proc/playsound, src, 'sound/effects/clang2.ogg', 40, 2), 15)
 	
 	// the stepsdone is a string of characters which are actions made.
 	// Once it is more or equal to 3, call try finish.

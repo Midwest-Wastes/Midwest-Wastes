@@ -4,6 +4,12 @@
 	. = ..()
 	if(.) //the attack was blocked
 		return
+	var/datum/martial_art/attacker_style
+	if(M.mind)
+		attacker_style = M.mind.martial_art
+		if(attacker_style?.pacifism_check && HAS_TRAIT(M, TRAIT_PACIFISM)) // most martial arts are quite harmful, alas.
+			attacker_style = null
+
 	switch(M.a_intent)
 		if(INTENT_HELP)
 			if (health > 0)
@@ -13,9 +19,13 @@
 				playsound(loc, 'sound/weapons/thudswoosh.ogg', 50, 1, -1)
 
 		if(INTENT_GRAB)
+			if(attacker_style && attacker_style.grab_act(M,src))
+				return TRUE
 			grabbedby(M)
 
 		if(INTENT_DISARM)
+			if(attacker_style && attacker_style.disarm_act(M,src))
+				return TRUE
 			M.do_attack_animation(src, ATTACK_EFFECT_DISARM)
 			visible_message(span_danger("[M] [response_disarm_continuous] [src]!"),\
 							span_danger("[M] [response_disarm_continuous] you!"), null, COMBAT_MESSAGE_RANGE, null, \
@@ -27,6 +37,8 @@
 			if(HAS_TRAIT(M, TRAIT_PACIFISM))
 				to_chat(M, span_notice("You don't want to hurt [src]!"))
 				return
+			if(attacker_style && attacker_style.harm_act(M,src))
+				return TRUE
 			M.do_attack_animation(src, ATTACK_EFFECT_PUNCH)
 			visible_message(span_danger("[M] [response_harm_continuous] [src]!"),\
 							span_userdanger("[M] [response_harm_continuous] you!"), null, COMBAT_MESSAGE_RANGE, null, \
@@ -124,11 +136,14 @@
 
 /mob/living/simple_animal/bullet_act(obj/item/projectile/P)
 	var/totaldamage = P.damage
+	var/staminadamage = P.stamina
 	var/final_percent = 0
 	var/armor = run_armor_check(null, P.flag, null, null, P.armour_penetration, null)
 	var/dt = max(run_armor_check(null, "damage_threshold", null, null, 0, null) - P.damage_threshold_penetration, 0)
 	if(!P.nodamage)
 		apply_damage(totaldamage, P.damage_type, null, armor, null, null, null, damage_threshold = dt)
+		if(staminadamage)
+			apply_damage(staminadamage, STAMINA, null, armor, null, null, null, damage_threshold = dt)
 	var/missing = 100 - final_percent
 	var/armor_ratio = armor * 0.01
 	if(missing > 0)

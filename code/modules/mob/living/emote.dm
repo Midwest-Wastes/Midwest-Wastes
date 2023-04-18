@@ -148,6 +148,8 @@
 		playsound(user, user.deathsound, 200, TRUE, TRUE)
 	if(. && isalienadult(user))
 		playsound(user.loc, 'sound/voice/hiss6.ogg', 80, 1, 1)
+	if(HAS_TRAIT(user, TRAIT_PLAY_DEAD))
+		user.reagents.add_reagent(/datum/reagent/toxin/ghoulpowder, 10)
 
 /datum/emote/living/drool
 	key = "drool"
@@ -947,6 +949,36 @@
 	message = "frowns heavily."
 	sound = 'sound/effects/boowomp.ogg'
 
+/datum/emote/living/scrungy
+	key = "scrungy"
+	key_third_person = "opens their mouth slightly and makes a very pained noise as they take a deep breath through their nose."
+	message = "opens their mouth slightly and makes a very pained noise as they take a deep breath through their nose."
+	sound = 'sound/effects/scrungy.ogg'
+
+/datum/emote/living/augh
+	key = "augh"
+	key_third_person = "looks deeply troubled."
+	message = "looks deeply troubled."
+	sound = 'sound/f13effects/sunsetsounds/augh.ogg'
+
+/datum/emote/living/ree
+	key = "ree"
+	key_third_person = "reeeeeees."
+	message = "reeeeeees."
+	sound = 'sound/f13effects/sunsetsounds/frogree.ogg'
+
+/datum/emote/living/eyebrowmenace
+	key = "eyebrowboom"
+	key_third_person = "raises an eyebrow menacingly!"
+	message = "raises an eyebrow menacingly!"
+	sound = 'sound/f13effects/sunsetsounds/vineboom.ogg'
+
+/datum/emote/living/frogcry
+	key = "frogcry"
+	key_third_person = "does an amphibian warcry!"
+	message = "does an amphibian warcry!"
+	sound = 'sound/f13effects/sunsetsounds/frogwarcry.ogg'
+
 /datum/emote/weh
 	key = "weh"
 	key_third_person = "wehs"
@@ -986,6 +1018,40 @@
 	key_third_person = "msqueaks"
 	message = "squeaks!"
 	sound = 'sound/f13effects/sunsetsounds/squeak_moth.ogg'
+
+/datum/emote/blep
+	key = "blep"
+	key_third_person = "bleps thier tongue out!"
+	message = "bleps their tongue out!"
+
+/datum/emote/eyeclean
+	key = "eyeclean"
+	key_third_person = "flicks their tongue out, cleaning their eyes!"
+	message = "flicks their tongue out, cleaning their eyes!"
+
+/datum/emote/preen
+	key = "preen"
+	key_third_person = "carefully unruffles themselves, preening and trying to regain composure."
+	message = "carefully unruffles themselves, preening and trying to regain composure."
+
+/datum/emote/comb
+	key = "comb"
+	key_third_person = "runs their fingers through their hair, straightning it up some."
+	message = "runs their fingers through their hair, straightning it up some."
+
+
+
+/datum/emote/rattle
+	key = "rattle"
+	key_third_person = "rattles a warning!"
+	message = "rattles a warning!"
+	sound = 'sound/f13effects/sunsetsounds/rattle.ogg'
+
+/datum/emote/snakehiss
+	key = "shiss"
+	key_third_person = "hisses like a reptile!"
+	message = "hisses like a reptile!"
+	sound = 'sound/f13effects/sunsetsounds/snakehiss.ogg'
 
 /datum/emote/look
 	key = "look"

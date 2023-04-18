@@ -1,6 +1,6 @@
 /obj/item/storage/trash_stack
 	name = "pile of garbage"
-	desc = "a pile of garbage. Smells as good, as it looks, though it may contain something useful. Or may not"
+	desc = "A pile of garbage. Smells as good as it looks, though it may contain something useful. Or rats. Probably rats."
 	icon = 'icons/fallout/objects/crafting.dmi'
 	icon_state = "trash_1"
 	anchored = TRUE
@@ -46,7 +46,7 @@
 			//		bonusitem.from_trash = TRUE
 			if(istype(newthing))
 				var/obj/item/newitem = newthing
-				newitem.from_trash = TRUE
+				newitem?.from_trash = TRUE // Fixes some objects not having the "from_trash" var
 				if(isgun(newitem))
 					var/obj/item/gun/trash_gun = newitem
 					var/prob_trash = 80

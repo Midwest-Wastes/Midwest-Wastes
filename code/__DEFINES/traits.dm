@@ -138,6 +138,7 @@
 #define TRAIT_OPTIMIST			"optimist"
 #define TRAIT_IN_HEAT			"ERP Receptive"
 #define TRAIT_HEAT_DETECT		"ERP Seeking"
+#define TRAIT_SMOL				"lil_fella"
 #define TRAIT_NOCRITDAMAGE		"no_crit"
 #define TRAIT_NOSLIPWATER		"noslip_water"
 #define TRAIT_NOSLIPALL			"noslip_all"
@@ -150,12 +151,24 @@
 #define TRAIT_SIXTHSENSE		"sixthsense"
 #define TRAIT_DISSECTED			"dissected"
 #define TRAIT_FEARLESS			"fearless"
+#define TRAIT_CATPHOBIA			"catphobia"
+#define TRAIT_RATPHOBIA			"ratphobia"
 #define TRAIT_SPIDERPHOBIA		"spiderphobia"
+#define TRAIT_LIZARDPHOBIA		"lizardphobia"
+#define TRAIT_ROBOTPHOBIA		"robotphobia"
+#define TRAIT_BIRDPHOBIA		"birdphobia"
+#define TRAIT_DOGPHOBIA			"dogphobia"
 #define TRAIT_BONERPHOBIA		"skelephobia"
 #define TRAIT_MASKPHOBIA		"maskphobia"
 #define TRAIT_DOCTORPHOBIA		"doctorphobia"
 #define TRAIT_EYEPHOBIA			"eyephobia"
-#define TRAIT_CATPHOBIA			"catphobia"
+#define TRAIT_CAT				"cats" // Try to match these species traits to phobia types in trauma.dm, makes life easier.
+#define TRAIT_RAT				"rats"
+#define TRAIT_SPIDER			"spiders"
+#define TRAIT_LIZARD			"lizards"
+#define TRAIT_ROBOT				"robots"
+#define TRAIT_BIRD				"birds"
+#define TRAIT_DOG				"dogs"
 #define TRAIT_UNSTABLE			"unstable"
 #define TRAIT_PARALYSIS_L_ARM	"para-l-arm" //These are used for brain-based paralysis, where replacing the limb won't fix it
 #define TRAIT_PARALYSIS_R_ARM	"para-r-arm"
@@ -208,6 +221,7 @@
 #define TRAIT_DRUNK_HEALING		"drunk_healing"
 #define TRAIT_TAGGER			"tagger"
 #define TRAIT_PHOTOGRAPHER		"photographer"
+#define TRAIT_JOURNALIST		"journalist"
 #define TRAIT_MUSICIAN			"musician"
 #define TRAIT_PERMABONER		"permanent_arousal"
 #define TRAIT_NEVERBONER		"never_aroused"
@@ -240,6 +254,7 @@
 #define TRAIT_MUTATION_STASIS			"mutation_stasis" //Prevents processed genetics mutations from processing.
 #define TRAIT_FAST_PUMP				"fast_pump"
 #define TRAIT_AUTO_DRAW				"auto_draw" //can use bows good
+#define TRAIT_PLAY_DEAD "play_dead" // gives 10u ghoul powder every *deathgasp
 #define TRAIT_NO_PROCESS_FOOD	"no-process-food" // You don't get benefits from nutriment, nor nutrition from reagent consumables
 #define TRAIT_NICE_SHOT			"nice_shot" //hnnnnnnnggggg..... you're pretty good...
 #define TRAIT_PERFECT_ATTACKER	"perfect_attacker"
@@ -260,6 +275,11 @@
 #define TRAIT_BEASTFRIEND_SMALLCRITTER "beastfriend-smallcritters"
 #define TRAIT_BEASTMASTER_RAT "beastmaster-rats"
 #define TRAIT_BEASTMASTER_SMALLCRITTER "beastmaster-smallcritters"
+#define TRAIT_NO_CHOCOLATE "chocolate-intolerance"
+#define TRAIT_WHITE_WOMAN "peanutbutter-difficulties"
+#define TRAIT_AUTOBREW "autobrewery-syndrome"
+#define TRAIT_ZOOMIES "zoomies"
+#define TRAIT_SUPER_ZOOMIES "super zoomies"
 
 // mobility flag traits
 // IN THE FUTURE, IT WOULD BE NICE TO DO SOMETHING SIMILAR TO https://github.com/tgstation/tgstation/pull/48923/files (ofcourse not nearly the same because I have my.. thoughts on it)
@@ -288,6 +308,7 @@
 #define TRAIT_SMUTANT		"Super Mutant"	// This is a trait usually locked for admins due to how OP it is
 #define	TRAIT_CHEMWHIZ			"chemwhiz"
 #define TRAIT_TECHNOPHOBE		"luddite" //Cannot use autolathes/biogens
+#define TRAIT_NODRUGS		"winners_cant_do_drugs" //drugs hurt you!
 #define TRAIT_LONGPORKLOVER		"Cannibal" //guess
 #define TRAIT_TRIBAL			"Tribalistic Person" //has access to tribal crafting recipes
 #define TRAIT_BERSERKER			"berserker" //currently unused
@@ -349,6 +370,8 @@
 #define TRAIT_NODROP "nodrop"
 /// Dont put it in storage things, simple as
 #define TRAIT_NO_STORAGE_INSERT "no_storage_insert"
+/// Can't leave a storage!
+#define TRAIT_NO_STORAGE_REMOVE "TRAIT_NO_STORAGE_REMOVE"
 
 // common trait sources
 #define TRAIT_GENERIC "generic"
@@ -413,6 +436,7 @@
 #define BERSERKER_TRAIT "berserker"
 #define SLEEPING_CARP_TRAIT "sleeping_carp"
 #define RISING_BASS_TRAIT "rising_bass"
+#define RAGING_BOAR_TRAIT "raging_boar"
 #define ABDUCTOR_ANTAGONIST "abductor-antagonist"
 #define MADE_UNCLONEABLE "made-uncloneable"
 #define TIMESTOP_TRAIT "timestop"
@@ -436,3 +460,6 @@
 #define TRAIT_AREA_SENSITIVE "area-sensitive"
 ///every hearing sensitive atom has this trait
 #define TRAIT_HEARING_SENSITIVE "hearing_sensitive"
+
+/// just a little helper to see if we're not a druggie
+#define NODRUGS(m) (HAS_TRAIT(m, TRAIT_NODRUGS))

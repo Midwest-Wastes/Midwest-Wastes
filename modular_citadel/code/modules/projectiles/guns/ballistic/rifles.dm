@@ -46,7 +46,7 @@
 
 /obj/item/ammo_box/magazine/wt550m9/wtrubber
 	name = "wt550 magazine (Rubber bullets 4.6x30mm)"
-	icon_state = "46x30mmtA-20"
+	icon_state = "473small"
 	ammo_type = /obj/item/ammo_casing/c46x30mm/rubber
 
 /obj/item/projectile/bullet/c46x30mm/rubber
@@ -149,7 +149,6 @@
 	burst_size = 5
 	fire_delay = 1
 	casing_ejector = 0
-	automatic_burst_overlay = FALSE
 	var/magtype = "flechettegun"
 
 /obj/item/gun/ballistic/automatic/flechette/update_overlays()
@@ -208,7 +207,6 @@
 	burst_size = 4	//Shh.
 	fire_delay = 1
 	var/body_color = "#3333aa"
-	automatic_burst_overlay = FALSE
 
 /obj/item/gun/ballistic/automatic/AM4B/ComponentInitialize()
 	. = ..()

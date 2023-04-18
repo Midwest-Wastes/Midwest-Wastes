@@ -355,3 +355,33 @@
 	name = "Sakura Kimono'"
 	icon_state = "sakura_kimono"
 	item_state = "sakura_kimono"
+
+//clown and mime
+
+/obj/item/clothing/under/jester
+	name = "Green and Red Jester outfit"
+	icon_state = "jester"
+	item_state = "jester"
+
+/obj/item/clothing/under/jester2
+	name = "Yellow and Red Jester Outfit"
+	icon_state = "jester2"
+	item_state = "jester2"
+
+/obj/item/clothing/under/jesterdark
+	name = "Dark Jester Outfit"
+	icon_state = "d_jester"
+	item_state = "d_jester"
+
+/obj/item/clothing/under/clown
+	name = "clown outfit"
+	icon_state = "clown"
+	item_state = "clown"
+
+/obj/item/clothing/under/fifi
+	name = "Fifi"
+	icon_state = "fifi"
+	item_state = "fifi"
+	item_color = "fifi"
+	body_parts_covered = CHEST|GROIN|ARMS
+	can_adjust = FALSE

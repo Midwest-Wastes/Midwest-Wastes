@@ -450,6 +450,14 @@
 		if(7 to INFINITY)
 			msg += "<span class='notice'><b><i>[t_He] [t_is] just absolutely fucked up, you can look again to take a closer look...</i></b></span>\n"
 
+	/// my first labeled loop thingy~
+	//tat_check: // cut down before its time.
+	for(var/X in bodyparts) // just check if *any* tats are visible
+		var/obj/item/bodypart/BP = X
+		if(BP.are_any_tattoos_visible(user))
+			msg += span_notice("[t_He] seem[p_s()] to have some ink done. <a href='?src=[REF(src)];show_tattoos=1'>\[Look closer?\]</a>")
+			break
+
 	if (length(msg))
 		. += span_warning("[msg.Join("")]")
 
@@ -459,7 +467,11 @@
 
 	if(HAS_TRAIT(src, TRAIT_IN_HEAT) && (HAS_TRAIT(user, TRAIT_HEAT_DETECT) || src == user))
 		. += ""
-		. += "<span class='love'>[t_He] [t_is] looking for [gender == MALE ? "a good time, you should check their OOC Notes" : "a good time, you should check their OOC Notes"].</span>"
+		. += "<span class='love'>[t_He] [t_is] looking for a good time, you should check their OOC Notes.</span>"
+
+	if(HAS_TRAIT(src, TRAIT_SMOL))
+		. += ""
+		. += span_notice("[t_He] looks easy to scoop up.</span>")
 
 	var/traitstring = get_trait_string()
 	if(ishuman(user))

@@ -554,7 +554,7 @@
 	desc = "A blue and yellow hood attached to a heavy winter jacket."
 	icon_state = "winterhood_captain"
 	armor_tokens = list(ARMOR_MODIFIER_UP_ENV_T1, ARMOR_MODIFIER_UP_BULLET_T1)
-	
+
 /obj/item/clothing/suit/hooded/wintercoat/hop
 	name = "head of personnel's winter coat"
 	desc = "A cozy winter coat, covered in thick fur. The breast features a proud yellow chevron, reminding everyone that you're the second banana."
@@ -1006,3 +1006,41 @@
 	icon_state = "samurai"
 	item_state = "samurai"
 	armor = ARMOR_VALUE_LIGHT
+
+//NCR Ranger Stuff
+
+/obj/item/clothing/suit/rain_coat
+	name = "Commonwealth sniper rain coat"
+	desc = "Used in jungle envrioments its a soft canvas cloak with a black mesh over it, with green foliage sticking out the front half."
+	icon_state = "rain_coat_sniper"
+	item_state = "rain_coat_sniper"
+	armor = ARMOR_VALUE_LIGHT
+
+/obj/item/clothing/suit/pip_cloak
+	name = "heart cloak"
+	desc = "A pretty blue cloak with a heart on the back."
+	icon_state = "pip_cloak"
+	item_state = "pip_cloak"
+	armor = ARMOR_VALUE_LIGHT
+
+/obj/item/clothing/suit/flintlock
+	name = "flintlock coat"
+	desc = "A green jacket with a brown fur lined inner."
+	icon_state = "flintlock"
+	item_state = "flintlock"
+	armor = ARMOR_VALUE_LIGHT
+
+/obj/item/clothing/suit/dension
+	name = "Denison jacket"
+	desc = "A coverall jacket created by the British during the second world war, its still in use by commonwealth units by specifically Paratroopers and units working in colder climates."
+	icon_state = "dension"
+	item_state = "dension"
+	armor = ARMOR_VALUE_LIGHT
+
+/obj/item/clothing/suit/canadian_coat
+	name = "flintlock coat"
+	desc = "A pre war standard issue service coat for the Canadian army but is a man stake for all British commonwealth Nations Winterwear."
+	icon_state = "Canadian_coat"
+	item_state = "Canadian_coat"
+	armor = ARMOR_VALUE_LIGHT
+

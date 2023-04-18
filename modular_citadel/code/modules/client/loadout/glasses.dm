@@ -1,25 +1,32 @@
 /datum/gear/glasses
 	category = LOADOUT_CATEGORY_GLASSES
 	slot = SLOT_GLASSES
+	cost = 1
 
 /datum/gear/glasses/blindfold
 	name = "Blindfold"
 	path = /obj/item/clothing/glasses/sunglasses/blindfold
-	cost = 2
 
 /datum/gear/glasses/fakeblindfold
 	name = "Fake Blindfold"
 	path = /obj/item/clothing/glasses/fakeblindfold
-	//No cost because there's no mechanical use
 
 /datum/gear/glasses/sunglasses
 	name = "Sunglasses"
 	path = /obj/item/clothing/glasses/sunglasses
-	cost = 2
 
 /datum/gear/glasses/sunglasses/big
 	name = "Large sunglasses"
 	path = /obj/item/clothing/glasses/sunglasses/big
+
+/datum/gear/glasses/biker
+	name = "biker goggles"
+	path = /obj/item/clothing/glasses/f13/biker
+	cost = 2
+
+/datum/gear/glasses/sandstorm
+	name = "sandstorm goggles"
+	path = /obj/item/clothing/glasses/legiongoggles
 
 /datum/gear/glasses/geist_gazers
 	name = "Geist Gazers Glasses"
@@ -48,7 +55,6 @@
 /datum/gear/glasses/monocle
 	name = "Monocle"
 	path = /obj/item/clothing/glasses/monocle
-	cost = 2
 
 /datum/gear/glasses/orange
 	name = "Orange glasses"

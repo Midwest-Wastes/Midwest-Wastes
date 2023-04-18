@@ -33,6 +33,7 @@
 	status_flags = CANPUSH
 	del_on_death = TRUE
 	speak_chance = 1
+	despawns_when_lonely = FALSE
 
 /obj/effect/mob_spawn/human/corpse/vault
 	name = "Vault Dweller"
@@ -533,7 +534,7 @@
 	ranged = 1
 	projectiletype = /obj/item/projectile/bullet/a762/sport/simple
 	projectilesound = 'sound/f13weapons/hunting_rifle.ogg'
-	casingtype = /obj/item/ammo_casing/a762/sport
+	casingtype = /obj/item/ammo_casing/a308
 	projectile_sound_properties = list(
 		SP_VARY(FALSE),
 		SP_VOLUME(RIFLE_MEDIUM_VOLUME),
@@ -561,7 +562,7 @@
 	ranged = 1
 	projectiletype = /obj/item/projectile/bullet/a762/sport/simple
 	projectilesound = 'sound/f13weapons/hunting_rifle.ogg'
-	casingtype = /obj/item/ammo_casing/a762/sport
+	casingtype = /obj/item/ammo_casing/a308
 	projectile_sound_properties = list(
 		SP_VARY(FALSE),
 		SP_VOLUME(RIFLE_MEDIUM_VOLUME),

@@ -174,4 +174,83 @@
 	else
 		qdel(shove)
 
+//Rock throw//
+/datum/emote/living/carbon/rocker
+	key = "rocks"
+	key_third_person = "rocks"
+	restraint_check = TRUE
+	COOLDOWN_DECLARE(rock_cooldown)
+	var/damageMult
+	var/hasPickedUp = FALSE
+	var/timerEnabled
+	var/damageNerf = 2.2
 
+
+/datum/emote/living/carbon/rocker/run_emote(mob/user)
+	. = ..()
+	if(!COOLDOWN_FINISHED(src, rock_cooldown) && !HAS_TRAIT(user, TRAIT_MONKEYLIKE))
+		to_chat(user, span_warning("You cant find any rocks yet!"))
+		return
+	if(user.get_active_held_item())
+		to_chat(user, span_warning("Your hands are too full to go looking for rocks!"))
+		return
+	var/obj/item/ammo_casing/caseless/rock/rock = new(user)
+
+	if(hasPickedUp)
+		rock.throwforce = damageMult / damageNerf
+
+	if(user.put_in_active_hand(rock))
+		hasPickedUp = TRUE
+		damageMult = rock.throwforce
+		if(!timerEnabled)
+			addtimer(CALLBACK(src, .proc/reset_damage), 2.5 SECONDS)
+			timerEnabled = TRUE
+		COOLDOWN_START(src, rock_cooldown, 2.5 SECONDS)
+		to_chat(user, span_notice("You find a nice hefty throwing rock!"))
+	else
+		qdel(rock)
+
+/datum/emote/living/carbon/rocker/proc/reset_damage()
+	hasPickedUp = FALSE
+	timerEnabled = FALSE
+	damageMult = initial(damageMult)
+
+//brick//
+/datum/emote/living/carbon/bricker
+	key = "brick"
+	key_third_person = "bricks"
+	restraint_check = TRUE
+	COOLDOWN_DECLARE(brick_cooldown)
+	var/damageMult
+	var/hasPickedUp = FALSE
+	var/timerEnabled
+	var/damageNerf = 2.2
+
+/datum/emote/living/carbon/bricker/run_emote(mob/user)
+	. = ..()
+	if(!COOLDOWN_FINISHED(src, brick_cooldown) && !HAS_TRAIT(user, TRAIT_QUICK_BUILD))
+		to_chat(user, span_warning("You cant find any bricks yet!"))
+		return
+	if(user.get_active_held_item())
+		to_chat(user, span_warning("Your hands are too full to go looking for bricks!"))
+		return
+	var/obj/item/ammo_casing/caseless/brick/brick = new(user)
+
+	if(hasPickedUp)
+		brick.throwforce = damageMult / damageNerf
+
+	if(user.put_in_active_hand(brick))
+		hasPickedUp = TRUE
+		damageMult = brick.throwforce
+		if(!timerEnabled)
+			addtimer(CALLBACK(src, .proc/reset_damage), 2.5 SECONDS)
+			timerEnabled = TRUE
+		COOLDOWN_START(src, brick_cooldown, 2.5 SECONDS)
+		to_chat(user, span_notice("You find a nice weighty brick!"))
+	else
+		qdel(brick)
+
+/datum/emote/living/carbon/bricker/proc/reset_damage()
+	hasPickedUp = FALSE
+	timerEnabled = FALSE
+	damageMult = initial(damageMult)

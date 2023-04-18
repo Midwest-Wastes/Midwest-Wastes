@@ -26,20 +26,21 @@ ATTACHMENTS
 	icon_state = "detective"
 	item_state = "gun"
 	flags_1 =  CONDUCT_1
-	slot_flags = ITEM_SLOT_BELT
+	slot_flags = null
 	custom_materials = list(/datum/material/iron=2000)
-	w_class = WEIGHT_CLASS_NORMAL
+	w_class = null
 	var/icon_prefix = null
 	throwforce = 5
 	throw_speed = 3
 	throw_range = 5
-	force = 5
+	force = null
 	item_flags = NEEDS_PERMIT | SLOWS_WHILE_IN_HAND
 	attack_verb = list("struck", "hit", "bashed")
 	hud_actions = list()
+	var/weapon_class = null //assigns w_class, slot_flags, draw_time, slowdown, and force, based on a template
 	var/fire_sound = "gunshot"
 	/// Time it takes between drawing the gun and shooting the gun
-	var/draw_time = GUN_DRAW_NORMAL 
+	var/draw_time = null
 
 	var/clumsy_check = TRUE
 	var/obj/item/ammo_casing/chambered = null
@@ -47,7 +48,7 @@ ATTACHMENTS
 	var/sawn_desc = null				//description change if weapon is sawn-off
 	var/sawn_off = FALSE
 
-	slowdown = GUN_SLOWDOWN_NONE
+	slowdown = null
 
 	var/damage_multiplier = 1 //Multiplies damage of projectiles fired from this gun
 	var/penetration_multiplier = 1 //Multiplies armor penetration of projectiles fired from this gun
@@ -133,7 +134,7 @@ ATTACHMENTS
 	var/dryfire_text = "*click*"
 
 	/// Time that much pass between cocking your gun, if it supports it
-	var/cock_delay = GUN_COCK_SHOTGUN_BASE
+	var/cock_delay = GUN_COCK_SHOTGUN_BASE //haha cock
 
 	/// Gun's inherent inaccuracy, basically the minimum spread
 	var/added_spread = GUN_SPREAD_NONE
@@ -168,16 +169,8 @@ ATTACHMENTS
 	var/list/misfire_possibilities = list()
 	/// What power of cartridge does this gun prefer? Mostly used for hoboguns that explode
 	var/prefered_power
-	var/list/gun_sound_properties = list(
-		SP_VARY(FALSE),
-		SP_VOLUME(PISTOL_LIGHT_VOLUME),
-		SP_VOLUME_SILENCED(PISTOL_LIGHT_VOLUME * SILENCED_VOLUME_MULTIPLIER),
-		SP_NORMAL_RANGE(PISTOL_LIGHT_RANGE),
-		SP_NORMAL_RANGE_SILENCED(SILENCED_GUN_RANGE),
-		SP_IGNORE_WALLS(TRUE),
-		SP_DISTANT_SOUND(PISTOL_LIGHT_DISTANT_SOUND),
-		SP_DISTANT_RANGE(PISTOL_LIGHT_RANGE_DISTANT)
-	)
+	/// Does the gun use the bullet's sounds, instead of its own?
+	var/use_casing_sounds
 	/// Cooldown between times the gun will tell you you're holding it wrong, 1 second cus its not super duper important
 	COOLDOWN_DECLARE(hold_it_right_message_antispam)
 	/// Cooldown between times the gun will tell you it shot, 0.5 seconds cus its not super duper important
@@ -208,6 +201,19 @@ ATTACHMENTS
 	if(LAZYLEN(firemodes))
 		set_firemode(sel_mode)
 	generate_guntags()
+
+	//writes in standard values for the weapon's class, if left null
+	if(islist(weapon_class))
+		if(isnull(w_class))
+			w_class = weapon_class["w_class"]
+		if(isnull(slot_flags))
+			slot_flags = weapon_class["slot_flags"]
+		if(isnull(slowdown))
+			slowdown = weapon_class["slowdown"]
+		if(isnull(force))
+			force = weapon_class["force"]
+		if(isnull(draw_time))
+			draw_time = weapon_class["draw_time"]
 
 /obj/item/gun/proc/initialize_firemodes()
 	QDEL_LIST(firemodes)
@@ -310,37 +316,36 @@ ATTACHMENTS
 	to_chat(user, span_danger("[dryfire_text]"))
 	playsound(src, dryfire_sound, 30, 1)
 	update_firemode()
+	update_icon()
 
-/obj/item/gun/proc/shoot_live_shot(mob/living/user, pointblank = FALSE, mob/pbtarget, message = 1, stam_cost = 0, obj/item/projectile/P)
+/obj/item/gun/proc/shoot_live_shot(mob/living/user, pointblank = FALSE, mob/pbtarget, message = 1, stam_cost = 0, obj/item/projectile/P, casing_sound)
 	if(stam_cost) //CIT CHANGE - makes gun recoil cause staminaloss
 		var/safe_cost = clamp(stam_cost, 0, STAMINA_NEAR_CRIT - user.getStaminaLoss())*(firing && burst_size >= 2 ? 1/burst_size : 1)
 		user.adjustStaminaLossBuffered(safe_cost) //CIT CHANGE - ditto
 
-	if(silenced)
-		playsound(
-			user,
-			fire_sound_silenced,
-			gun_sound_properties[SOUND_PROPERTY_VOLUME_SILENCED],
-			gun_sound_properties[SOUND_PROPERTY_VARY],
-			gun_sound_properties[SOUND_PROPERTY_NORMAL_RANGE_SILENCED]
-			)
-	else
-		playsound(
-			user,
-			fire_sound,
-			gun_sound_properties[SOUND_PROPERTY_VOLUME],
-			gun_sound_properties[SOUND_PROPERTY_VARY],
-			gun_sound_properties[SOUND_PROPERTY_NORMAL_RANGE],
-			ignore_walls = gun_sound_properties[SOUND_PROPERTY_IGNORE_WALLS],
-			distant_sound = gun_sound_properties[SOUND_PROPERTY_DISTANT_SOUND],
-			distant_range = gun_sound_properties[SOUND_PROPERTY_DISTANT_SOUND_RANGE]
-			)
-		if(message && COOLDOWN_FINISHED(src, shoot_message_antispam))
-			COOLDOWN_START(src, shoot_message_antispam, GUN_SHOOT_MESSAGE_ANTISPAM_TIME)
-			if(pointblank)
-				user.visible_message(span_danger("[user] fires [src] point blank at [pbtarget]!"), null, null, COMBAT_MESSAGE_RANGE)
-			else
-				user.visible_message(span_danger("[user] fires [src]!"), null, null, COMBAT_MESSAGE_RANGE)
+	var/datum/ammo_sound_properties/soundies = GLOB.casing_sound_properties[casing_sound]
+	if(!soundies)
+		return
+	var/list/shootprops = soundies.shootlist(silenced)
+	if(!isnull(fire_sound))
+		shootprops[CSP_INDEX_SOUND_OUT] = silenced ? fire_sound_silenced : fire_sound
+
+	playsound(
+		user,
+		shootprops[CSP_INDEX_SOUND_OUT],
+		shootprops[CSP_INDEX_VOLUME],
+		shootprops[CSP_INDEX_VARY],
+		shootprops[CSP_INDEX_DISTANCE],
+		ignore_walls = shootprops[CSP_INDEX_IGNORE_WALLS],
+		distant_sound = shootprops[CSP_INDEX_DISTANT_SOUND],
+		distant_range = shootprops[CSP_INDEX_DISTANT_RANGE]
+		)
+	if(!silenced && message && COOLDOWN_FINISHED(src, shoot_message_antispam))
+		COOLDOWN_START(src, shoot_message_antispam, GUN_SHOOT_MESSAGE_ANTISPAM_TIME)
+		if(pointblank)
+			user.visible_message(span_danger("[user] fires [src] point blank at [pbtarget]!"), null, null, COMBAT_MESSAGE_RANGE)
+		else
+			user.visible_message(span_danger("[user] fires [src]!"), null, null, COMBAT_MESSAGE_RANGE)
 	kickback(user, P)
 
 //Adds logging to the attack log whenever anyone draws a gun, adds a pause after drawing a gun before you can do anything based on it's size
@@ -457,6 +462,8 @@ ATTACHMENTS
 	var/stam_cost = getstamcost(user)
 
 	process_fire(target, user, TRUE, params, null, stam_cost)
+	update_icon()
+
 
 /obj/item/gun/can_trigger_gun(mob/living/user)
 	. = ..()
@@ -509,6 +516,36 @@ ATTACHMENTS
 	if (automatic == 1)
 		return busy_action || firing
 
+/* 
+ * So here is the list of proc calls that happen when you fire a gun:
+ * You click on something with a gun in your hand
+ * The game calls ClickOn() on the gun
+ * ClickOn() calls the gun's afterattack() proc
+ * afterattack() first checks if the gun is on cooldown, if it is, it returns
+ * afterattack() then checks if the gun is empty, if it is, it calls shoot_with_empty_chamber()
+ * afterattack() then calls process_fire() on the gun with the target as an argument
+ * process_fire() first checks if the gun is on cooldown, if it is, it returns
+ * process_fire() then checks if the gun is on safety, if it is, it calls shoot_with_empty_chamber()
+ * process_fire() then sets the gun's firing variable to TRUE
+ * process_fire() then calls do_fire() on the gun with the target as an argument
+ * do_fire() first tries to misfire the gun, if possible. Doesnt really change anything whether it does or not
+ * do_fire() then checks if the gun has a chambered round, if it doesnt, it calls shoot_with_empty_chamber()
+ * do_fire() then gets the user's recoil amount and adds it to the gun's spread
+ * do_fire() then calls chambered's fire_casing() proc with a bunch of args
+ * If fire_casing fails, shoot_with_empty_chamber() is called
+ * Otherwise, call shoot_live_shot() with the same args
+ * If the gun has burst mode, and hasn't fired all of its shots, sleep for the burst delay right now
+ * Then call process_chamber() on the gun with the user as an argument
+ * Congratulation, you just shot someone probably
+ * Then we return to process_fire()
+ * process_fire() then sets the gun's firing variable to FALSE
+ * process_fire() then sets the gun's last_fire variable to the current world time
+ * (last_fire is used to check if the gun is on cooldown, comparing it to the current world time)
+ * THen we return to afterattack()
+ * Then what happens next is up to the wierdass attack chain system that i barely understand
+ * (props to github's copilot for more or less writing this comment)
+ */
+
 /obj/item/gun/proc/process_fire(atom/target, mob/living/user, message = TRUE, params = null, zone_override = "", stam_cost = 0)
 	add_fingerprint(user)
 
@@ -523,6 +560,8 @@ ATTACHMENTS
 	if(time_till_draw)
 		to_chat(user, "<span class='notice'>You're still drawing your [src]! It'll take another <u>[time_till_draw*0.1] seconds</u> until it's ready!</span>")
 		return
+	if(pre_fire(user, target, params, zone_override, stam_cost))
+		return TRUE // pre_fire will handle what comes next~ (like firing at your mouse cursor after a delay)
 	firing = TRUE
 	. = do_fire(target, user, message, params, zone_override, stam_cost)
 	firing = FALSE
@@ -532,6 +571,9 @@ ATTACHMENTS
 		user.update_inv_hands()
 		SEND_SIGNAL(user, COMSIG_LIVING_GUN_PROCESS_FIRE, target, params, zone_override, stam_cost)
 
+/obj/item/gun/proc/pre_fire(mob/user, atom/target, params, zone_override, stam_cost, message = TRUE)
+	return FALSE
+
 /obj/item/gun/proc/do_fire(atom/target, mob/living/user, message = TRUE, params, zone_override = "", stam_cost = 0)
 	var/sprd = 0
 	for(var/i in 1 to burst_size)
@@ -540,15 +582,16 @@ ATTACHMENTS
 			sprd = user.calculate_offset()
 			before_firing(target,user)
 			var/BB = chambered.BB
+			var/casing_sound = chambered.sound_properties
 			if(!chambered.fire_casing(target, user, params, added_spread, silenced, zone_override, sprd, damage_multiplier, penetration_multiplier, projectile_speed_multiplier, src))
 				shoot_with_empty_chamber(user)
 				update_icon()
 				return
 			else
 				if(get_dist(user, target) <= 1) //Making sure whether the target is in vicinity for the pointblank shot
-					shoot_live_shot(user, 1, target, message, stam_cost, BB)
+					shoot_live_shot(user, 1, target, message, stam_cost, BB, casing_sound)
 				else
-					shoot_live_shot(user, 0, target, message, stam_cost, BB)
+					shoot_live_shot(user, 0, target, message, stam_cost, BB, casing_sound)
 		else
 			shoot_with_empty_chamber(user)
 			update_icon()
@@ -1402,16 +1445,24 @@ ATTACHMENTS
 		span_alert("You hear a loud bang!")
 		)
 	/// Everyone gets to hear how shitty your gun is
+	var/datum/ammo_sound_properties/soundies = GLOB.casing_sound_properties[chambered?.sound_properties]
+	if(!soundies)
+		return
+	var/list/shootprops = soundies.shootlist(FALSE)
+	if(!isnull(fire_sound))
+		shootprops[CSP_INDEX_SOUND_OUT] = fire_sound
+
 	playsound(
 		user,
-		fire_sound,
-		gun_sound_properties[SOUND_PROPERTY_VOLUME] * extra_hurt * 2,
-		gun_sound_properties[SOUND_PROPERTY_VARY],
-		gun_sound_properties[SOUND_PROPERTY_NORMAL_RANGE] * extra_hurt * 2,
-		ignore_walls = gun_sound_properties[SOUND_PROPERTY_IGNORE_WALLS],
-		distant_sound = gun_sound_properties[SOUND_PROPERTY_DISTANT_SOUND] * extra_hurt * 2,
-		distant_range = gun_sound_properties[SOUND_PROPERTY_DISTANT_SOUND_RANGE] * extra_hurt * 2
+		shootprops[CSP_INDEX_SOUND_OUT],
+		shootprops[CSP_INDEX_VOLUME] * extra_hurt * 2,
+		shootprops[CSP_INDEX_VARY],
+		shootprops[CSP_INDEX_DISTANCE] * extra_hurt * 2,
+		ignore_walls = shootprops[CSP_INDEX_IGNORE_WALLS],
+		distant_sound = shootprops[CSP_INDEX_DISTANT_SOUND],
+		distant_range = shootprops[CSP_INDEX_DISTANT_RANGE]
 		)
+
 	return TRUE
 
 /obj/item/gun/proc/hurt_the_holder(mob/living/user, extra_hurt, dmg_divisor)
@@ -1511,6 +1562,9 @@ GLOBAL_LIST_INIT(gun_yeet_words, list(
 	playsound(src, "sound/weapons/punchmiss.ogg", 100, 1)
 	return TRUE
 
+/obj/item/gun/proc/post_modify_projectile(obj/item/projectile/BB)
+	return
+
 /obj/item/storage/backpack/debug_gun_hobo
 	name = "Bag of Gunstuff 4 hobos"
 	desc = "Cool shit for testing various guns!"
@@ -1534,8 +1588,8 @@ GLOBAL_LIST_INIT(gun_yeet_words, list(
 	new /obj/item/gun/ballistic/revolver/hobo/knifegun(src)
 	new /obj/item/gun/ballistic/revolver/hobo/single_shotgun(src)
 	new /obj/item/ammo_box/m5mmbox(src)
-	new /obj/item/ammo_box/a762box(src)
-	new /obj/item/ammo_box/a762box(src)
+	new /obj/item/ammo_box/a308box(src)
+	new /obj/item/ammo_box/a3006box(src)
 	new /obj/item/ammo_box/a50MGbox(src)
 	new /obj/item/ammo_box/shotgun/slug(src)
 	new /obj/item/ammo_box/shotgun/buck(src)
@@ -1546,11 +1600,11 @@ GLOBAL_LIST_INIT(gun_yeet_words, list(
 	new /obj/item/ammo_box/m44(src)
 	new /obj/item/ammo_box/m14mm(src)
 
-/obj/item/storage/backpack/debug_gun_kitauto
+/obj/item/storage/backpack/debug_gun_multical
 	name = "Bag of Gunstuff"
 	desc = "Cool shit for testing various guns!"
 
-/obj/item/storage/backpack/debug_gun_kitauto/PopulateContents()
+/obj/item/storage/backpack/debug_gun_multical/PopulateContents()
 	. = ..()
 	new /obj/item/screwdriver/abductor(src)
 	new /obj/item/crowbar/abductor(src)
@@ -1560,23 +1614,19 @@ GLOBAL_LIST_INIT(gun_yeet_words, list(
 	new /obj/item/melee/onehanded/knife/bayonet(src)
 	new /obj/item/flashlight/seclite(src)
 	new /obj/item/gun/ballistic/automatic/smg/sidewinder(src)
+	new /obj/item/gun/ballistic/automatic/pistol/beretta(src)
+	new /obj/item/gun/ballistic/automatic/pistol/pistol14(src)
 	new /obj/item/ammo_box/magazine/uzim9mm(src)
-	new /obj/item/ammo_box/magazine/uzim9mm(src)
-	new /obj/item/ammo_box/magazine/m9mm/doublestack(src)
 	new /obj/item/ammo_box/magazine/m9mm/doublestack(src)
 	new /obj/item/ammo_box/magazine/m10mm/adv/ext(src)
 	new /obj/item/ammo_box/magazine/m10mm/adv(src)
 	new /obj/item/ammo_box/magazine/m10mm_p90(src)
 	new /obj/item/ammo_box/magazine/m45(src)
 	new /obj/item/ammo_box/magazine/m45/socom(src)
-	new /obj/item/ammo_box/magazine/m45/socom(src)
 	new /obj/item/ammo_box/magazine/tommygunm45(src)
 	new /obj/item/ammo_box/magazine/tommygunm45/stick(src)
 	new /obj/item/ammo_box/magazine/greasegun(src)
-	new /obj/item/ammo_box/magazine/greasegun(src)
 	new /obj/item/ammo_box/magazine/m22(src)
-	new /obj/item/ammo_box/magazine/m22(src)
-	new /obj/item/ammo_box/magazine/m22/extended(src)
 	new /obj/item/ammo_box/magazine/m22/extended(src)
 	new /obj/item/ammo_box/magazine/m22smg(src)
 
@@ -1592,15 +1642,8 @@ GLOBAL_LIST_INIT(gun_yeet_words, list(
 	new /obj/item/ammo_box/magazine/m22smg(src)
 	new /obj/item/gun/ballistic/automatic/assault_rifle(src)
 	new /obj/item/ammo_box/magazine/m556/rifle/extended(src)
-	new /obj/item/ammo_box/magazine/m556/rifle/extended(src)
-	new /obj/item/ammo_box/magazine/m556/rifle/extended(src)
-	new /obj/item/ammo_box/magazine/m556/rifle/extended/hobo(src)
-	new /obj/item/ammo_box/magazine/m556/rifle/extended/hobo(src)
 	new /obj/item/ammo_box/magazine/m556/rifle/extended/hobo(src)
 	new /obj/item/gun/ballistic/automatic/shotgun/pancor(src)
-	new /obj/item/ammo_box/magazine/d12g/buck(src)
-	new /obj/item/ammo_box/magazine/d12g/buck(src)
-	new /obj/item/ammo_box/magazine/d12g/buck(src)
 	new /obj/item/ammo_box/magazine/d12g/buck(src)
 	new /obj/item/ammo_box/magazine/d12g/buck(src)
 

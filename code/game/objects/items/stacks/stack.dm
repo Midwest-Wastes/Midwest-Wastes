@@ -42,11 +42,12 @@
 	for(var/i in 1 to grind_results.len) //This should only call if it's ground, so no need to check if grind_results exists
 		grind_results[grind_results[i]] *= get_amount() //Gets the key at position i, then the reagent amount of that key, then multiplies it by stack size
 
-/obj/item/stack/grind_requirements()
+/obj/item/stack/grind_requirements(obj/machinery/reagentgrinder/R, silent)
 	if(is_cyborg)
-		to_chat(usr, span_danger("[src] is electronically synthesized in your chassis and can't be ground up!"))
-		return
-	return TRUE
+		if(!silent)
+			to_chat(usr, span_danger("[src] is electronically synthesized in your chassis and can't be ground up!"))
+		return GRIND_IS_CYBORG
+	return FALSE
 
 /obj/item/stack/Initialize(mapload, new_amount, merge = TRUE)
 	if(new_amount != null)
@@ -228,7 +229,8 @@
 			recipes_list = srl.recipes
 		var/datum/stack_recipe/R = recipes_list[text2num(href_list["make"])]
 		var/multiplier = round(text2num(href_list["multiplier"]))
-		if (multiplier < 1) //href protection
+		if(!multiplier || multiplier < 1 || !IS_FINITE(multiplier)) //href exploit protection
+			stack_trace("Invalid multiplier value in stack creation [multiplier], [usr] is likely attempting an exploit")
 			return
 		if(!building_checks(R, multiplier))
 			return
@@ -246,7 +248,11 @@
 
 		var/obj/O
 		if(R.max_res_amount > 1) //Is it a stack?
-			O = new R.result_type(usr.drop_location(), R.res_amount * multiplier)
+			if(R.is_stack)
+				O = new R.result_type(usr.drop_location(), R.res_amount * multiplier)
+			else
+				for(var/i in 1 to multiplier)
+					O = new R.result_type(get_turf(usr))
 		else if(ispath(R.result_type, /turf))
 			var/turf/T = usr.drop_location()
 			if(!isturf(T))
@@ -547,8 +553,10 @@
 	var/applies_mats = FALSE
 	var/trait_booster = null
 	var/trait_modifier = 1
+	/// Is the resulting thing made from this a stack? if so, multi-crafting will make a stack with multiple 'uses' of it. if not, multi-crafting makes several separate items of it
+	var/is_stack = TRUE
 
-/datum/stack_recipe/New(title, result_type, req_amount = 1, res_amount = 1, max_res_amount = 1,time = 0, one_per_turf = FALSE, on_floor = FALSE, window_checks = FALSE, placement_checks = FALSE, applies_mats = FALSE, trait_booster = null, trait_modifier = 1)
+/datum/stack_recipe/New(title, result_type, req_amount = 1, res_amount = 1, max_res_amount = 1,time = 0, one_per_turf = FALSE, on_floor = FALSE, window_checks = FALSE, placement_checks = FALSE, applies_mats = FALSE, trait_booster = null, trait_modifier = 1, is_stack = TRUE)
 
 
 	src.title = title
@@ -564,6 +572,7 @@
 	src.applies_mats = applies_mats
 	src.trait_booster = trait_booster
 	src.trait_modifier = trait_modifier
+	src.is_stack = is_stack
 /*
  * Recipe list datum
  */

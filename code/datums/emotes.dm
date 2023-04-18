@@ -1,6 +1,7 @@
 /datum/emote
 	var/key = "" //What calls the emote
 	var/key_third_person = "" //This will also call the emote
+	var/no_message = FALSE
 	var/message = "" //Message displayed when emote is used
 	var/message_alien = "" //Message displayed if the user is a grown alien
 	var/message_larva = "" //Message displayed if the user is an alien larva
@@ -15,7 +16,7 @@
 	var/list/mob_type_allowed_typecache = /mob //Types that are allowed to use that emote
 	var/list/mob_type_blacklist_typecache //Types that are NOT allowed to use that emote
 	var/list/mob_type_ignore_stat_typecache
-	var/stat_allowed = CONSCIOUS
+	var/stat_allowed = SOFT_CRIT
 	var/static/list/emote_list = list()
 	var/static/regex/stop_bad_mime = regex(@"says|exclaims|yells|asks")
 	/// Sound to play when emote is called.
@@ -36,6 +37,8 @@
 	var/omit_left_name = FALSE
 
 /datum/emote/New()
+	if(restraint_check)
+		stat_allowed = CONSCIOUS // just to be safe!
 	if(key_third_person)
 		emote_list[key_third_person] = src
 	if (ispath(mob_type_allowed_typecache))
@@ -55,6 +58,8 @@
 	. = TRUE
 	if(!can_run_emote(user, TRUE, intentional))
 		return FALSE
+	if(no_message)
+		return
 	var/msg = select_message_type(user)
 	if(params && message_param)
 		msg = select_param(user, params)
@@ -92,7 +97,7 @@
 
 
 /// Sends the given emote message for all ghosts with ghost sight enabled, excluding close enough to listen normally.
-/mob/proc/emote_for_ghost_sight(message, admin_only)
+/mob/proc/emote_for_ghost_sight(message, admin_only, message_range)
 	for(var/mob/ghost as anything in GLOB.dead_mob_list)
 		if(QDELETED(ghost))
 			continue
@@ -100,18 +105,22 @@
 			continue
 		if(!(ghost.client.prefs.chat_toggles & CHAT_GHOSTSIGHT))
 			continue
-		if(admin_only && ghost.client && !check_rights_for(ghost.client, R_ADMIN))
+		if(admin_only && !check_rights_for(ghost.client, R_ADMIN))
 			continue
-		var/ghost_view = ghost.client.view
-		if(ghost.z == z)
-			if(isnum(ghost_view))
-				if(get_dist(src, ghost) < ghost_view)
-					continue
-			else
-				var/list/view_range_list = splittext(ghost_view, "x")
-				if(abs(x - ghost.x) < ((text2num(view_range_list[1]) - 1) / 2))
-					if(abs(y - ghost.y) < ((text2num(view_range_list[2]) - 1) / 2))
+		if(message_range)
+			if(get_dist(src, ghost) < message_range)
+				continue
+		else
+			var/ghost_view = ghost.client.view
+			if(ghost.z == z)
+				if(isnum(ghost_view))
+					if(get_dist(src, ghost) < ghost_view)
 						continue
+				else
+					var/list/view_range_list = splittext(ghost_view, "x")
+					if(abs(x - ghost.x) < ((text2num(view_range_list[1]) - 1) / 2))
+						if(abs(y - ghost.y) < ((text2num(view_range_list[2]) - 1) / 2))
+							continue
 		ghost.show_message("<span class='emote'>[FOLLOW_LINK(ghost, src)] [message]</span>")
 
 

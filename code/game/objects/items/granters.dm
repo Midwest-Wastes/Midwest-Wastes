@@ -464,12 +464,43 @@
 	name = "shifting scroll"
 	martialname = "rising bass"
 	desc = "A paper scroll that seems to move even as you read it, the letters never seem to stay still."
-	greet = span_sciradio("You have learned the ancient martial art of the Rising Bass. Your skill at running away has increased quite a bit. Use the combos to get away from opponents quickly. Along with this, you now dodge all projectiles and catch anything thrown at you.")
+	greet = "<span class='sciradio'>You have learned the ancient martial art of the Rising Bass. Your skill at running away has increased quite a bit. Use the combos to get away from opponents quickly. Along with this, you now dodge all projectiles and catch anything thrown at you. \
+	However, you are also unable to use any ranged weaponry. You can learn more about your newfound art by using the Recall Teachings verb in the Rising Bass tab.</span>"
 	icon = 'icons/obj/wizard.dmi'
 	icon_state = "scroll2"
 	remarks = list("The trick is to disarm them...","Running away helps in many situations...","Never stay still...","Fighting won't help unless you're forced to...", "Crush their limbs to incapacitate them...", "Stay as far away as possible...")
 
 /obj/item/book/granter/martial/bass/onlearned(mob/living/carbon/user)
+	..()
+	if(oneuse == TRUE)
+		desc = "It's completely blank."
+		name = "empty scroll"
+		icon_state = "blankscroll"
+
+/obj/item/book/granter/martial/raging_boar
+	martial = /datum/martial_art/raging_boar
+	name = "raging scroll"
+	martialname = "raging boar"
+	desc = "A paper scroll written in a thick, red, angry-looking typeface. Half of it is just the letter 'A' repeated thousands of times, \
+			in between vivid descriptions of why drugs are disgusting and something about a pork hammer? Weird."
+	greet = "<span class='sciradio'>You have learned the violent screaming fury of the Raging Boar! \
+			Your skill at diving headfirst into combat is unmatched! You can tackle just about anything at any time! \
+			Along with this, your hand-to-hand attacks knock creatures back. \
+			However, you are also unable to use any ranged weaponry. You can learn more about your newfound art by using the Recall \
+			Teachings verb in the Rising Bass tab.</span>"
+	icon = 'icons/obj/wizard.dmi'
+	icon_state = "scroll2"
+	remarks = list(
+		span_red("DIVE THE FUKC IN RUN TOO SLOW"),
+		span_red("AAAAAAAAAAAAAAAAAAAAAAAAAAA"),
+		span_userdanger("AAAAAAAAAAAAAAAAAAAAA"),
+		span_red("FACEPLANT MUDERFUKC KILLHARD"),
+		span_red("JUST FUKCING JUMP AT THEM"),
+		span_red("SCREM SO YOUR FUCK HIT HARDER"),
+		span_red("WINNERS DONT DO DRUGS"),
+		span_red("SPIN2FUKCIN KILLFUCK"))
+
+/obj/item/book/granter/martial/raging_boar/onlearned(mob/living/carbon/user)
 	..()
 	if(oneuse == TRUE)
 		desc = "It's completely blank."
@@ -602,7 +633,7 @@
 	icon_state = "gab1"
 	oneuse = TRUE
 	remarks = list("Always keep your gun well lubricated...", "Keep your barrel free of grime...", "Perfect fitment is the key to a good firearm...", "Maintain a proper trigger pull length...", "Keep your sights zeroed to proper range...")
-	crafting_recipe_types = list(/datum/crafting_recipe/ninemil, /datum/crafting_recipe/huntingrifle, /datum/crafting_recipe/schmeisser)
+	crafting_recipe_types = list(/datum/crafting_recipe/ninemil, /datum/crafting_recipe/huntingrifle, /datum/crafting_recipe/tec22)
 
 /obj/item/book/granter/crafting_recipe/gunsmith_two
 	name = "Guns and Bullets, Part 2"
@@ -610,7 +641,7 @@
 	icon_state = "gab2"
 	oneuse = TRUE
 	remarks = list("Always keep your gun well lubricated...", "Keep your barrel free of grime...", "Perfect fitment is the key to a good firearm...", "Maintain a proper trigger pull length...", "Keep your sights zeroed to proper range...")
-	crafting_recipe_types = list(/datum/crafting_recipe/n99, /datum/crafting_recipe/huntingrifle, /datum/crafting_recipe/m1911, /datum/crafting_recipe/varmintrifle, /datum/crafting_recipe/rangerlever, /datum/crafting_recipe/caravanshotty)
+	crafting_recipe_types = list(/datum/crafting_recipe/n99, /datum/crafting_recipe/huntingrifle, /datum/crafting_recipe/m1911, /datum/crafting_recipe/varmintrifle, /datum/crafting_recipe/caravanshotty, /datum/crafting_recipe/widowmakershotty, /datum/crafting_recipe/auto9mm)
 
 /obj/item/book/granter/crafting_recipe/gunsmith_three
 	name = "Guns and Bullets, Part 3"
@@ -759,6 +790,16 @@
 	icon_state = "blueprint2"
 	crafting_recipe_types = list(/datum/crafting_recipe/AER9)
 
+/obj/item/book/granter/crafting_recipe/blueprint/aer9/focused
+	name = "hotwired aer9 blueprint"
+	icon_state = "blueprint2"
+	crafting_recipe_types = list(/datum/crafting_recipe/aer9_hotwired)
+
+/obj/item/book/granter/crafting_recipe/blueprint/aer9/focused/rynn
+	name = "aer10 blueprint"
+	icon_state = "blueprint2"
+	crafting_recipe_types = list(/datum/crafting_recipe/aer9_hotwired_rynn)
+
 /obj/item/book/granter/crafting_recipe/blueprint/plasmarifle
 	name = "plasma rifle blueprint"
 	icon_state = "blueprint2"
@@ -833,12 +874,12 @@
 	name = "ranger repeater carbine"
 	icon_state = "blueprint2"
 	crafting_recipe_types = list(/datum/crafting_recipe/rangerlever)
-
+/*
 /obj/item/book/granter/crafting_recipe/blueprint/schmeisser
 	name = "schmeisser blueprint"
 	icon_state = "blueprint2"
 	crafting_recipe_types = list(/datum/crafting_recipe/schmeisser)
-
+*/
 /obj/item/book/granter/crafting_recipe/blueprint/trapper
 	name = "guide to minelaying"
 	icon_state = "blueprint2"
@@ -957,7 +998,7 @@
 	oneuse = TRUE
 	granted_trait = TRAIT_TECHNOPHREAK
 	traitname = "craftsmanship"
-	crafting_recipe_types = list(/datum/crafting_recipe/tribalradio, /datum/crafting_recipe/durathread_vest)
+	crafting_recipe_types = list(/datum/crafting_recipe/tribalradio, /datum/crafting_recipe/durathread_vest, /datum/crafting_recipe/enhancedecp, /datum/crafting_recipe/enhancedenergycell, /datum/crafting_recipe/enhancedmfcell)
 	remarks = list("Troubleshooting is a systematic approach to problem solving, do not skip any steps in the process.", "Ensure you have all the required parts before you begin.", "Always wear personal protective equipment, electric shock can be fatal.", "Combustibles and sparks do not mix, store welding fuel in a safe location.", "Don't lose track of your tools, or you have a new problem to deal with.")
 
 /obj/item/book/granter/trait/wirevision
@@ -1154,9 +1195,9 @@
 		/datum/crafting_recipe/tribalwar/heavytribe,
 		/datum/crafting_recipe/healpoultice,
 		/datum/crafting_recipe/healpoultice5,
-		/datum/crafting_recipe/redpotion,
-		/datum/crafting_recipe/bluepotion,
-		/datum/crafting_recipe/greenpotion,
+		//datum/crafting_recipe/redpotion,
+		//datum/crafting_recipe/bluepotion,
+		//datum/crafting_recipe/greenpotion,
 		/datum/crafting_recipe/warmace)
 
 /obj/item/book/granter/trait/tribaltraditions
@@ -1253,13 +1294,15 @@
 				traitname = "Ex Tribal"
 				granted_trait = TRAIT_FORMER_TRIBAL
 				crafting_recipe_types = list(
-					/datum/crafting_recipe/tribal/bonetalisman,
+					///datum/crafting_recipe/tribal/bonetalisman,
 					/datum/crafting_recipe/spearfisher,
+					/datum/crafting_recipe/bitterdrink,
+					/datum/crafting_recipe/bitterdrink5,
 					/datum/crafting_recipe/healpoultice,
 					/datum/crafting_recipe/healpoultice5,
-					/datum/crafting_recipe/redpotion,
-					/datum/crafting_recipe/bluepotion,
-					/datum/crafting_recipe/greenpotion,
+					//datum/crafting_recipe/redpotion,
+					//datum/crafting_recipe/bluepotion,
+					//datum/crafting_recipe/greenpotion,
 					/datum/crafting_recipe/food/pemmican,
 					/datum/crafting_recipe/tribal/bonebag
 					)

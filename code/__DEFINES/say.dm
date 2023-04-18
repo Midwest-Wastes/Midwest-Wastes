@@ -3,51 +3,7 @@
 	Currently contains speech spans and message modes
 */
 
-//Message modes. Each one defines a radio channel, more or less.
-#define MODE_HEADSET "headset"
-#define MODE_ROBOT "robot"
 
-#define MODE_R_HAND "right hand"
-#define MODE_KEY_R_HAND "r"
-
-#define MODE_L_HAND "left hand"
-#define MODE_KEY_L_HAND "l"
-
-#define MODE_INTERCOM "intercom"
-#define MODE_KEY_INTERCOM "i"
-
-#define MODE_BINARY "binary"
-#define MODE_KEY_BINARY "b"
-#define MODE_TOKEN_BINARY ":b"
-
-#define MODE_WHISPER "whisper"
-#define MODE_WHISPER_CRIT "whispercrit"
-
-#define MODE_CUSTOM_SAY "custom_say"
-
-#define MODE_DEPARTMENT "department"
-#define MODE_KEY_DEPARTMENT "h"
-#define MODE_TOKEN_DEPARTMENT ":h"
-
-#define MODE_ADMIN "admin"
-#define MODE_KEY_ADMIN "p"
-
-#define MODE_DEADMIN "deadmin"
-#define MODE_KEY_DEADMIN "d"
-
-#define MODE_ALIEN "alientalk"
-#define MODE_HOLOPAD "holopad"
-
-#define MODE_CHANGELING "changeling"
-#define MODE_KEY_CHANGELING "g"
-#define MODE_TOKEN_CHANGELING ":g"
-
-#define MODE_VOCALCORDS "cords"
-#define MODE_KEY_VOCALCORDS "x"
-
-#define MODE_MONKEY "monkeyhive"
-
-#define MODE_SING "%"
 
 //Spans. Robot speech, italics, etc. Applied in compose_message().
 #define SPAN_ROBOT "robot"
@@ -86,10 +42,14 @@
 #define MAX_MESSAGE_LEN			4096		//Citadel edit: What's the WORST that could happen?
 #define MAX_FLAVOR_LEN			4096
 #define MIN_FLAVOR_LEN			100
+#define MIN_OOC_LEN				20 // Will not allow just smileys to be on OOC notes.
 #define MAX_TASTE_LEN			40
 #define MAX_NAME_LEN			42
 #define MAX_BROADCAST_LEN		512
 #define MAX_CHARTER_LEN			80
+
+// Template for OOC notes.
+#define OOC_NOTE_TEMPLATE ""
 
 // Is something in the IC chat filter? This is config dependent.
 #define CHAT_FILTER_CHECK(T) (config.ic_filter_regex && findtext(T, config.ic_filter_regex))

@@ -493,3 +493,25 @@
 	to_chat(user, span_notice("You insert [I] into [src]."))
 	B.use(10)
 	icon_state = initial(icon_state)
+
+/obj/item/clothing/shoes/jester
+	name = "Jester shoes"
+	icon_state = "jester_shoes"
+
+/obj/item/clothing/shoes/clown
+	name = "Clown Shoes"
+	icon_state = "clown"
+
+/obj/item/clothing/shoes/brit
+	name = "Commonwealth Boots"
+	desc = "British style black ankle boots with a canvas gaiter around the ankle"
+	icon_state = "brit_boots"
+
+/obj/item/clothing/shoes/fifi
+	name = "Fifi"
+	icon_state = "fifi_socks"
+
+/obj/item/clothing/shoes/ww2brown
+	name = "Type three service shoe"
+	desc = "A post second world war design of the American standard boot, with Canvas leggings. Just modernized its specificly used for Jungle combat or in service in Hotter climates it was also lend leased to other nations in the Pacific. And is used by some wasters to this very day as a highly useful footwear garment."
+	icon_state = "ww2_brown"

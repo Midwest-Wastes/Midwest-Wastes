@@ -656,6 +656,10 @@
 	var/uniformtoggled = FALSE
 	body_parts_hidden = GROIN|LEGS
 
+/obj/item/clothing/under/f13/khan/biker
+	name = "rough ridin' jeans"
+	desc = "Pants designed to be ridden hard and put away wet. Alt-click to convert into considerably less badass highwaters."
+
 /obj/item/clothing/under/f13/khan/shorts
 	name = "denim jorts"
 	desc = "Denim pants, but jorts!"
@@ -752,6 +756,7 @@
 	body_parts_covered = GROIN
 	fitted = FEMALE_UNIFORM_TOP
 	can_adjust = TRUE
+	alt_covers_chest = TRUE
 
 /obj/item/clothing/under/f13/wayfarer/shamanblue
 	name = "blue shaman garbs"
@@ -791,6 +796,7 @@
 	item_color = "hunter"
 	fitted = FEMALE_UNIFORM_TOP
 	can_adjust = TRUE
+	alt_covers_chest = TRUE
 
 //OUTLAW DESERTERS
 /obj/item/clothing/under/f13/exile
@@ -824,6 +830,7 @@
 	body_parts_covered = GROIN
 	fitted = FEMALE_UNIFORM_TOP
 	can_adjust = TRUE
+	alt_covers_chest = TRUE
 
 /obj/item/clothing/under/f13/exile/enclave
 	name = "disheveled peacekeeper uniform"

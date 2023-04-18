@@ -4,6 +4,8 @@
 	attack_speed = CLICK_CD_MELEE
 	max_integrity = 200
 	armor = ARMOR_VALUE_GENERIC_ITEM
+	block_parry_data = /datum/block_parry_data/bokken
+	item_flags = ITEM_CAN_PARRY
 
 /obj/item/melee/onehanded
 	name = "onehand melee template"
@@ -193,6 +195,7 @@
 	force = 23
 	throwforce = 25
 	attack_verb = list("slashed", "stabbed", "sliced", "torn", "ripped", "cut")
+	toolspeed = 0.8
 
 /obj/item/melee/onehanded/knife/survival
 	name = "survival knife"
@@ -217,6 +220,7 @@
 	force = 28
 	throwforce = 25
 	attack_verb = list("slashed", "stabbed", "sliced", "shanked", "ripped", "lacerated")
+	toolspeed = 0.8
 
 /obj/item/melee/onehanded/knife/trench
 	name = "trench knife"
@@ -323,6 +327,7 @@ obj/item/melee/onehanded/knife/switchblade
 	force = 25
 	throwforce = 15
 	armour_penetration = 0.2
+	toolspeed = 0.9
 
 // Heat it with a welder
 /obj/item/melee/onehanded/knife/cosmic/welder_act(mob/living/user, obj/item/I)
@@ -704,9 +709,9 @@ obj/item/melee/onehanded/knife/switchblade
 			H.dna.species.punchdamagehigh = 10
 			H.dna.species.punchdamagelow = 1
 		if(HAS_TRAIT(user, TRAIT_IRONFIST))
-			H.dna.species.punchdamagehigh = 14
-			H.dna.species.punchdamagelow = 4
-		if(HAS_TRAIT(user, TRAIT_FEV)) //Holy shit that Supermutant had a powerfist!
+			H.dna.species.punchdamagehigh = 12
+			H.dna.species.punchdamagelow = 6
+		if(HAS_TRAIT(user, TRAIT_STEELFIST))
 			H.dna.species.punchdamagehigh = 16
 			H.dna.species.punchdamagelow = 10
 		H.dna.species.attack_sound = 'sound/weapons/punch1.ogg'

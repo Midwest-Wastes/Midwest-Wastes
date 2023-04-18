@@ -609,3 +609,11 @@
 ///living players needed to activate limited mob ability powers
 #define MOB_POWER_SOME_MIN_PLAYERS 9
 
+/// Drop everything in the mob loot list
+#define MOB_LOOT_ALL "allofit"
+
+/// Simple mob cannot be stamcrit
+#define SIMPLEMOB_NO_STAMCRIT -1
+
+/// Max distance you can see tats
+#define TATTOO_VISIBILITY_RANGE 3
